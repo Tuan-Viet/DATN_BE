@@ -14,6 +14,9 @@ app.use(cors());
 connectDB('mongodb://127.0.0.1/datn-database')
 
 app.use("/api", router);
-
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on ${process.env.PORT}`);
+    console.log("hehehee");
+  });
 
 export const viteNodeApp = app;
