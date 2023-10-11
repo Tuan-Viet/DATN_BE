@@ -9,8 +9,11 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-// process.env.MONGODB_URL
+
+app.use('/api', router)
+
 // Conect to MongoDB
+// connectDB(process.env.MONGODB_URL)
 connectDB('mongodb://127.0.0.1/datn-database')
 
 app.use("/api", router);
