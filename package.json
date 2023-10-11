@@ -16,6 +16,7 @@
     "joi": "^17.11.0",
     "mongodb": "^6.1.0",
     "mongoose": "^7.6.0",
+    "mongoose-paginate-v2": "^1.7.4",
     "vite": "^4.4.11",
     "vite-plugin-node": "^3.0.2"
   },
