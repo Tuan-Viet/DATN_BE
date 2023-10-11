@@ -16,4 +16,10 @@ app.use('/api', router)
 // connectDB(process.env.MONGODB_URL)
 connectDB('mongodb://127.0.0.1/datn-database')
 
+app.use("/api", router);
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on ${process.env.PORT}`);
+    console.log("hehehee");
+  });
+
 export const viteNodeApp = app;
