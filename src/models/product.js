@@ -15,15 +15,18 @@ const productSchema = new mongoose.Schema(
         discount: {
             type: Number,
             required: true,
-            min: 0,
+            max: 100,
         },
         description: {
             type: String,
             required: true,
         },
-        images: {
-            type: Array,
-        },
+        images:  [
+            {
+                type: Object,
+                required: true,
+            },
+        ],
         thumnail: {
             type: String,
             required: true,
@@ -32,14 +35,6 @@ const productSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
             required: true,
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now,
-        },
-        updatedAt: {
-            type: Date,
-            default: Date.now,
         },
         deleted: {
             type: Boolean,

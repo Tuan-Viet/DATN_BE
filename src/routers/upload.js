@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { removeImages, removeImagesByUrl, uploadImages } from "../controllers/upload";
+import { removeImages, uploadImages } from "../controllers/upload";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinaryConfig";
 import multer from "multer";
