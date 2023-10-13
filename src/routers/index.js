@@ -5,6 +5,7 @@ import routerCategory from "./category.js"
 import routerImages from "./upload.js"
 import routerSize from "./size"
 import routerColor from "./color"
+import routerVoucher from "./voucher"
 
 const router = express.Router()
 
@@ -14,6 +15,8 @@ router.use('/categories', routerCategory)
 router.use('/images', routerImages)
 router.use('/sizes', routerSize)
 router.use('/colors', routerColor)
+router.use('/vouchers', routerVoucher)
+
 
 
 export default router
