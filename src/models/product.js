@@ -14,29 +14,91 @@ const productSchema = new mongoose.Schema(
         },
         discount: {
             type: Number,
-            required: true,
-            max: 100,
+            required: false,
+            min: 0,
         },
         description: {
             type: String,
             required: true,
         },
-        images:  [
+        images: [
             {
                 type: Object,
                 required: true,
             },
         ],
-        thumnail: {
-            type: String,
-            required: true,
-        },
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
             required: true,
         },
-        productDetails: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
+        variants: [
+            {
+                imageColor: { type: String, required: true },
+                nameColor: { type: String, required: true },
+                items: [
+                    {
+                        size: { type: String, required: true },
+                        quantity: { type: Number, required: true },
+                        available: { type: Boolean, default: true },
+                        hide: { type: Boolean, default: false },
+                    }
+                ],
+                sold: {
+                    type: Number,
+                    required: true,
+                    default: 0,
+                },
+                createdAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+                updatedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            }
+        ],
+        isSale: {
+            status: {
+                type: Boolean,
+                default: false
+            },
+            percent: {
+                type: Number,
+                default: 0,
+                max: 100,
+            },
+            end: {
+                type: Date
+            }
+        },
+        review: {
+            count: {
+                type: Number,
+                require: false,
+                default: 0
+            },
+            avg: {
+                type: Number,
+                required: false
+            },
+            items: [
+                {
+                    byUser: {
+                        type: String
+                    },
+                    content: {
+                        type: String
+                    },
+                    date: {
+                        type: Date,
+                        default: Date.now
+                    }
+
+                }
+            ]
+        },
         createdAt: {
             type: Date,
             default: Date.now,
@@ -44,6 +106,10 @@ const productSchema = new mongoose.Schema(
         updatedAt: {
             type: Date,
             default: Date.now,
+        },
+        hide: {
+            type: Boolean,
+            default: false,
         },
         deleted: {
             type: Boolean,

@@ -7,6 +7,6 @@ router.get('/', getAll)
 router.get('/:id', get)
 router.post('/add', create)
 router.delete('/:id', remove)
-router.put('/:id', update)
+router.patch('/:id', update)
 
 export default router
