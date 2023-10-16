@@ -63,59 +63,59 @@ export const create = async (req, res) => {
 };
 
 export const remove = async (req, res) => {
-    try {
-      const categoryId = req.params.id;
-      console.log(categoryId);
-  
-      // Tìm danh mục "Chưa phân loại" hoặc tạo nếu chưa tồn tại
-      let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
-  
-      if (!undefinedCategory) {
-        undefinedCategory = await Category.create({ name: "Chưa phân loại" });
-        console.log(1);
-      }
-      console.log(undefinedCategory);
-  
-       //  Tìm và chuyển các sản phẩm liên quan sang danh mục "Uncategorized"
-       const productsToUpdate = await Product.find({ categoryId: categoryId });
-       console.log(productsToUpdate);
-       await Category.findByIdAndUpdate(undefinedCategory._id, {
-        $push: {
-            products: {
-                $each: productsToUpdate.map((product) => product._id),
-            },
+  try {
+    const categoryId = req.params.id;
+    console.log(categoryId);
+
+    // Tìm danh mục "Chưa phân loại" hoặc tạo nếu chưa tồn tại
+    let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
+
+    if (!undefinedCategory) {
+      undefinedCategory = await Category.create({ name: "Chưa phân loại" });
+      console.log(1);
+    }
+    console.log(undefinedCategory);
+
+    //  Tìm và chuyển các sản phẩm liên quan sang danh mục "Uncategorized"
+    const productsToUpdate = await Product.find({ categoryId: categoryId });
+    console.log(productsToUpdate);
+    await Category.findByIdAndUpdate(undefinedCategory._id, {
+      $push: {
+        products: {
+          $each: productsToUpdate.map((product) => product._id),
         },
+      },
     });
     console.log(0);
-      
-      // Xóa danh mục
-      const category = await Category.findByIdAndDelete(req.params.id)
-      console.log(category);
-  
-      // Cập nhật tất cả sản phẩm thuộc danh mục xóa để tham chiếu đến danh mục "Chưa phân loại"
-      if (undefinedCategory) {
-        await Product.updateMany(
-          { categoryId },
-          { categoryId: undefinedCategory._id }
-        );
-      }
-  
-      if (!category) {
-        return res.status(400).json({
-          message: "Xóa không thành công!",
-        });
-      }
-      return res.status(200).json({
-        message: "Thành công",
-        data: category,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Lỗi server",
-        error,
+
+    // Xóa danh mục
+    const category = await Category.findByIdAndDelete(req.params.id)
+    console.log(category);
+
+    // Cập nhật tất cả sản phẩm thuộc danh mục xóa để tham chiếu đến danh mục "Chưa phân loại"
+    if (undefinedCategory) {
+      await Product.updateMany(
+        { categoryId },
+        { categoryId: undefinedCategory._id }
+      );
+    }
+
+    if (!category) {
+      return res.status(400).json({
+        message: "Xóa không thành công!",
       });
     }
-  };
+    return res.status(200).json({
+      message: "Thành công",
+      data: category,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Lỗi server",
+      error,
+    });
+  }
+};
 
 export const update = async (req, res) => {
   try {
@@ -128,7 +128,8 @@ export const update = async (req, res) => {
     const updateData = { ...req.body, updateAt: new Date() };
     const category = await Category.findByIdAndUpdate(
       req.params.id,
-      updateData
+      updateData,
+      { new: true }
     );
     if (!category) {
       return res.status(400).json({
