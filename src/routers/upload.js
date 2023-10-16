@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { removeImages, removeImagesByUrl, uploadImages } from "../controllers/upload";
+import { removeImages, uploadImages } from "../controllers/upload";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinaryConfig";
 import multer from "multer";
@@ -15,7 +15,6 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 routerImages.post("/upload", upload.array("images", 10), uploadImages);
-routerImages.delete("/delete-by-url", removeImagesByUrl);
 routerImages.delete("/remove/:publicId", removeImages);
 
 

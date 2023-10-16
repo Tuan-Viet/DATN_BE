@@ -150,24 +150,42 @@ export const update = async (req, res) => {
 
 export const deleteCategories = async (req, res) => {
   try {
-    const { ids } = req.body;
-    if (!ids || ids.length === 0) {
-      return res.status(400).json({
-        message: "Không có Danh muc nào để xóa.",
-      });
+    const categoryIds = req.body.categoryIds;
+
+    let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
+
+    if (!undefinedCategory) {
+      undefinedCategory = await Category.create({ name: "Chưa phân loại" });
     }
 
-    const deleteCategories = await Category.deleteMany({ _id: { $in: ids } });
+    const productsToUpdate = await Product.find({ categoryId: { $in: categoryIds } });
 
-    if (deleteCategories.deletedCount === 0) {
+    if (productsToUpdate.length > 0) {
+      await Category.findByIdAndUpdate(undefinedCategory._id, {
+        $push: {
+          products: {
+            $each: productsToUpdate.map((product) => product._id),
+          },
+        },
+      });
+
+      await Product.updateMany(
+        { categoryId: { $in: categoryIds } },
+        { categoryId: undefinedCategory._id }
+      );
+    }
+
+    const result = await Category.deleteMany({ _id: { $in: categoryIds } });
+
+    if (!result || result.deletedCount === 0) {
       return res.status(400).json({
         message: "Xóa không thành công!",
       });
     }
 
     return res.status(200).json({
-      message: "Xóa thành công",
-      data: deleteCategories,
+      message: "Thành công",
+      data: result,
     });
   } catch (error) {
     return res.status(500).json({
