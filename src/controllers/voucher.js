@@ -1,5 +1,5 @@
-import Voucher from "../models/voucher";
-import { voucherValidationSchema } from "../validations/voucher";
+import Voucher from "../models/voucher.js";
+import { voucherValidationSchema } from "../validations/voucher.js";
 
 export const getVouchers = async (req, res) => {
     try {

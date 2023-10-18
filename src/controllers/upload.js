@@ -1,6 +1,5 @@
 import { Error } from "mongoose";
-import cloudinary from "../config/cloudinaryConfig"
-import { getPublicIdFromUrl } from "../Common/convertPublicId";
+import cloudinary from "../config/cloudinaryConfig.js"
 
 export const uploadImages = async (req, res) => {
     try {
