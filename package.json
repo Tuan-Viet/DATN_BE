@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "nodemon --experimental-modules --es-module-specifier-resolution=node ./src/app.js"
+    "build": "tsc && vite build",
+    "start": "node --experimental-specifier-resolution=node src/app.js"
   },
   "keywords": [],
   "author": "",
