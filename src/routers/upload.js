@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { removeImages, uploadImages } from "../controllers/upload";
+import { removeImages, uploadImages } from "../controllers/upload.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinaryConfig";
+import cloudinary from "../config/cloudinaryConfig.js";
 import multer from "multer";
 
 const routerImages = Router();
