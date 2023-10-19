@@ -14,16 +14,19 @@ const productSchema = new mongoose.Schema(
         },
         discount: {
             type: Number,
-            required: true,
+            required: false,
             min: 0,
         },
         description: {
             type: String,
             required: true,
         },
-        images: {
-            type: Array,
-        },
+        images: [
+            {
+                type: Object,
+                required: true,
+            },
+        ],
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
@@ -37,6 +40,10 @@ const productSchema = new mongoose.Schema(
         updatedAt: {
             type: Date,
             default: Date.now,
+        },
+        hide: {
+            type: Boolean,
+            default: false,
         },
         deleted: {
             type: Boolean,

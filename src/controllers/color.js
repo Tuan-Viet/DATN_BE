@@ -1,5 +1,5 @@
-import Color from "../models/color"
-import { colorSchema } from "../validations/color"
+import Color from "../models/color.js"
+import { colorSchema } from "../validations/color.js"
 
 export const create = async (req, res) => {
     try {

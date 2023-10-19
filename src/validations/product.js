@@ -5,8 +5,7 @@ export const productSchema = joi.object({
     discount: joi.number().required().min(0),
     description: joi.string().required(),
     images: joi.array().required(),
+    variants: joi.array(),
     categoryId: joi.string().required(),
-    createdAt: joi.date().default(() => new Date()),
-    updatedAt: joi.date().default(() => new Date()),
     deleted: joi.boolean().default(false),
 });

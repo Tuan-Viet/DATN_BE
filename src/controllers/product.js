@@ -1,7 +1,7 @@
-import Category from "../models/category";
-import Product from "../models/product";
-import ProductDetail from "../models/product_detail";
-import { productSchema } from "../validations/product";
+import Category from "../models/category.js";
+import Product from "../models/product.js";
+import ProductDetail from "../models/product_detail.js";
+import { productSchema } from "../validations/product.js";
 export const getAll = async (req, res) => {
     // req.query._sort => price
     const {
