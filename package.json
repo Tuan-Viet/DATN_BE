@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "startv2": "nodemon --experimental-modules --es-module-specifier-resolution=node ./src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +32,6 @@
     "@types/node": "^20.8.3"
   },
   "engines": {
-  "node": ">=14.20.1"
+    "node": ">=14.20.1"
   }
 }
