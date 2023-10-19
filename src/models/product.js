@@ -24,16 +24,12 @@ const productSchema = new mongoose.Schema(
         images: {
             type: Array,
         },
-        thumnail: {
-            type: String,
-            required: true,
-        },
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
             required: true,
         },
-        productDetails: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
+        variants: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
         createdAt: {
             type: Date,
             default: Date.now,

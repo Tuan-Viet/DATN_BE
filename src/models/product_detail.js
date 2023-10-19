@@ -8,11 +8,11 @@ const productDetailSchema = new mongoose.Schema(
             ref: "Product",
             required: true,
         },
-        color_id: {
+        nameColor: {
             type: String,
             required: true,
         },
-        size_id: {
+        size: {
             type: String,
             required: true,
         },
@@ -26,7 +26,7 @@ const productDetailSchema = new mongoose.Schema(
             required: true,
             min: 0,
         },
-        image: {
+        imageColor: {
             type: String,
             required: true,
         },
