@@ -189,7 +189,7 @@ export const update = async (req, res) => {
             }
         });
         productDetails.forEach(async (newproductDetail) => {
-            if (!newproductDetail._id) {
+            if (!newproductDetail._id && !newproductDetail.product_id) {
                 const productDetail = await ProductDetail.create(newproductDetail)
                 if (!productDetail) {
                     return res.status(404).json({
