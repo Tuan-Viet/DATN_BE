@@ -1,16 +1,15 @@
 import { Error } from "mongoose";
-import cloudinary from "../config/cloudinaryConfig"
-import { getPublicIdFromUrl } from "../Common/convertPublicId";
+import cloudinary from "../config/cloudinaryConfig.js"
 
 export const uploadImages = async (req, res) => {
     try {
         const images = req.files.map(file => file.path)
         console.log(req.files);
-        let uploadedImages =  []
+        let uploadedImages = []
 
         for (let image of images) {
             const result = await cloudinary.uploader.upload(image)
-            uploadedImages.push ({
+            uploadedImages.push({
                 url: result.secure_url,
                 publicId: result.public_id
             })

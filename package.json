@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "nodemon --experimental-modules --es-module-specifier-resolution=node ./src/app.js"
+    "build": "tsc && vite build",
+    "start": "node src/app.js",
+    "startv2": "nodemon --experimental-modules --es-module-specifier-resolution=node ./src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -33,5 +35,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.8.3"
+  },
+  "engines": {
+    "node": ">=14.20.1"
   }
 }

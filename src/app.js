@@ -7,6 +7,9 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "./models/user";
 import cookieSession from "cookie-session";
+import connectDB from "./config/database.js";
+import router from "./routers/index.js";
+
 dotenv.config();
 import * as passportSetup from "./middlwares/passport.js"
 const app = express();

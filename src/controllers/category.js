@@ -63,54 +63,54 @@ export const create = async (req, res) => {
 };
 
 export const remove = async (req, res) => {
-    try {
-      const categoryId = req.params.id;
-  
-      // Tìm danh mục "Chưa phân loại" hoặc tạo nếu chưa tồn tại
-      let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
-  
-      if (!undefinedCategory) {
-        undefinedCategory = await Category.create({ name: "Chưa phân loại" });
-      }
-  
-       //  Tìm và chuyển các sản phẩm liên quan sang danh mục "Uncategorized"
-       const productsToUpdate = await Product.find({ categoryId: categoryId });
-       console.log(productsToUpdate);
-       await Category.findByIdAndUpdate(undefinedCategory._id, {
-        $push: {
-            products: {
-                $each: productsToUpdate.map((product) => product._id),
-            },
+  try {
+    const categoryId = req.params.id;
+
+    // Tìm danh mục "Chưa phân loại" hoặc tạo nếu chưa tồn tại
+    let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
+
+    if (!undefinedCategory) {
+      undefinedCategory = await Category.create({ name: "Chưa phân loại" });
+    }
+
+    //  Tìm và chuyển các sản phẩm liên quan sang danh mục "Uncategorized"
+    const productsToUpdate = await Product.find({ categoryId: categoryId });
+    console.log(productsToUpdate);
+    await Category.findByIdAndUpdate(undefinedCategory._id, {
+      $push: {
+        products: {
+          $each: productsToUpdate.map((product) => product._id),
         },
+      },
     });
-      
-      // Xóa danh mục
-      const category = await Category.findByIdAndDelete(req.params.id)
-  
-      // Cập nhật tất cả sản phẩm thuộc danh mục xóa để tham chiếu đến danh mục "Chưa phân loại"
-      if (undefinedCategory) {
-        await Product.updateMany(
-          { categoryId },
-          { categoryId: undefinedCategory._id }
-        );
-      }
-  
-      if (!category) {
-        return res.status(400).json({
-          message: "Xóa không thành công!",
-        });
-      }
-      return res.status(200).json({
-        message: "Thành công",
-        data: category,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Lỗi server",
-        error,
+
+    // Xóa danh mục
+    const category = await Category.findByIdAndDelete(req.params.id)
+
+    // Cập nhật tất cả sản phẩm thuộc danh mục xóa để tham chiếu đến danh mục "Chưa phân loại"
+    if (undefinedCategory) {
+      await Product.updateMany(
+        { categoryId },
+        { categoryId: undefinedCategory._id }
+      );
+    }
+
+    if (!category) {
+      return res.status(400).json({
+        message: "Xóa không thành công!",
       });
     }
-  };
+    return res.status(200).json({
+      message: "Thành công",
+      data: category,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Lỗi server",
+      error,
+    });
+  }
+};
 
 export const update = async (req, res) => {
   try {
@@ -123,7 +123,8 @@ export const update = async (req, res) => {
     const updateData = { ...req.body, updateAt: new Date() };
     const category = await Category.findByIdAndUpdate(
       req.params.id,
-      updateData
+      updateData,
+      { new: true }
     );
     if (!category) {
       return res.status(400).json({
@@ -144,47 +145,47 @@ export const update = async (req, res) => {
 
 export const deleteCategories = async (req, res) => {
   try {
-      const categoryIds = req.body.categoryIds; 
+    const categoryIds = req.body.categoryIds;
 
-      let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
+    let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
 
-      if (!undefinedCategory) {
-          undefinedCategory = await Category.create({ name: "Chưa phân loại" });
-      }
+    if (!undefinedCategory) {
+      undefinedCategory = await Category.create({ name: "Chưa phân loại" });
+    }
 
-      const productsToUpdate = await Product.find({ categoryId: { $in: categoryIds } });
+    const productsToUpdate = await Product.find({ categoryId: { $in: categoryIds } });
 
-      if (productsToUpdate.length > 0) {
-          await Category.findByIdAndUpdate(undefinedCategory._id, {
-              $push: {
-                  products: {
-                      $each: productsToUpdate.map((product) => product._id),
-                  },
-              },
-          });
-
-          await Product.updateMany(
-              { categoryId: { $in: categoryIds } },
-              { categoryId: undefinedCategory._id }
-          );
-      }
-
-      const result = await Category.deleteMany({ _id: { $in: categoryIds } });
-
-      if (!result || result.deletedCount === 0) {
-          return res.status(400).json({
-              message: "Xóa không thành công!",
-          });
-      }
-
-      return res.status(200).json({
-          message: "Thành công",
-          data: result,
+    if (productsToUpdate.length > 0) {
+      await Category.findByIdAndUpdate(undefinedCategory._id, {
+        $push: {
+          products: {
+            $each: productsToUpdate.map((product) => product._id),
+          },
+        },
       });
+
+      await Product.updateMany(
+        { categoryId: { $in: categoryIds } },
+        { categoryId: undefinedCategory._id }
+      );
+    }
+
+    const result = await Category.deleteMany({ _id: { $in: categoryIds } });
+
+    if (!result || result.deletedCount === 0) {
+      return res.status(400).json({
+        message: "Xóa không thành công!",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Thành công",
+      data: result,
+    });
   } catch (error) {
-      return res.status(500).json({
-          message: "Lỗi server",
-          error,
-      });
+    return res.status(500).json({
+      message: "Lỗi server",
+      error,
+    });
   }
 };

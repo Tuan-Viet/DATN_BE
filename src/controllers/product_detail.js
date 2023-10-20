@@ -1,6 +1,6 @@
-import Product from "../models/product";
-import ProductDetail from "../models/product_detail";
-import { productDetailSchema } from "../validations/product_details";
+import Product from "../models/product.js";
+import ProductDetail from "../models/product_detail.js";
+import { productDetailSchema } from "../validations/product_details.js";
 export const getAll = async (req, res) => {
     // req.query._sort => price
     const {
@@ -38,10 +38,7 @@ export const getAll = async (req, res) => {
 };
 export const get = async (req, res) => {
     try {
-        const productDetail = await ProductDetail.findById(req.params.id).populate(
-            "productId",
-            "productDetials"
-        );
+        const productDetail = await ProductDetail.findById(req.params.id);
         if (!productDetail) {
             return res.status(404).json({
                 message: "productDetail not found",

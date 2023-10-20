@@ -14,29 +14,25 @@ const productSchema = new mongoose.Schema(
         },
         discount: {
             type: Number,
-            required: true,
-            max: 100,
+            required: false,
+            min: 0,
         },
         description: {
             type: String,
             required: true,
         },
-        images:  [
+        images: [
             {
                 type: Object,
                 required: true,
             },
         ],
-        thumnail: {
-            type: String,
-            required: true,
-        },
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
             required: true,
         },
-        productDetails: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
+        variants: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
         createdAt: {
             type: Date,
             default: Date.now,
@@ -44,6 +40,10 @@ const productSchema = new mongoose.Schema(
         updatedAt: {
             type: Date,
             default: Date.now,
+        },
+        hide: {
+            type: Boolean,
+            default: false,
         },
         deleted: {
             type: Boolean,
