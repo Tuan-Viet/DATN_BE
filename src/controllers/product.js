@@ -172,8 +172,13 @@ export const update = async (req, res) => {
             if (variant.product_id) {
                 const { nameColor, imageColor, sold, items, product_id } = variant;
                 items.forEach(item => {
-                    const { size, quantity } = item;
-                    productDetails.push({ product_id, nameColor, imageColor, sold, size, quantity });
+                    if (item._id) {
+                        const { size, quantity, _id } = item;
+                        productDetails.push({ _id, product_id, nameColor, imageColor, sold, size, quantity });
+                    } else {
+                        const { size, quantity } = item;
+                        productDetails.push({ product_id, nameColor, imageColor, sold, size, quantity });
+                    }
                 });
             } else {
                 const { nameColor, imageColor, sold, items } = variant;
@@ -184,7 +189,7 @@ export const update = async (req, res) => {
             }
         });
         productDetails.forEach(async (newproductDetail) => {
-            if (!newproductDetail.product_id) {
+            if (!newproductDetail._id) {
                 const productDetail = await ProductDetail.create(newproductDetail)
                 if (!productDetail) {
                     return res.status(404).json({

@@ -69,8 +69,8 @@ const productDetailSchema = new mongoose.Schema(
         sold: {
             type: Number,
             required: true,
+            min: 0,
             default: 0,
-            min: 0
         },
         quantity: {
             type: Number,
