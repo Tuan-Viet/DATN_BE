@@ -21,6 +21,7 @@ export const getAll = async (req, res) => {
         sort: {
             [_sort]: _order === "desc" ? "-1" : "1",
         },
+        populate: "categoryId",
     };
     try {
         const { docs: products } = await Product.paginate(searchQuery, optinos);

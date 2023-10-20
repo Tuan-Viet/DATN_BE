@@ -3,18 +3,35 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/database";
 import router from "./routers";
-
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import User from "./models/user";
+import cookieSession from "cookie-session";
 dotenv.config();
-
+import * as passportSetup from "./middlwares/passport.js"
 const app = express();
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["desired23"],
+    maxAge: 24 * 60 * 60 * 100,
+  })
+);
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: "GET,POST,PUT,DELETE",
+    ocredentials: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use('/api', router)
+app.use("/api", router);
 
-// Conect to MongoDB
-connectDB(process.env.MONGODB_URL)
-// connectDB('mongodb://127.0.0.1/datn-database')
+connectDB(process.env.MONGODB_URL);
 
 app.use("/api", router);
 app.listen(process.env.PORT, () => {

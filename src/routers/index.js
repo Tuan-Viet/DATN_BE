@@ -6,6 +6,7 @@ import routerImages from "./upload.js"
 import routerSize from "./size"
 import routerColor from "./color"
 import routerVoucher from "./voucher"
+import routerAuth from "./auth"
 
 const router = express.Router()
 
@@ -16,6 +17,7 @@ router.use('/images', routerImages)
 router.use('/sizes', routerSize)
 router.use('/colors', routerColor)
 router.use('/vouchers', routerVoucher)
+router.use("/auth", routerAuth);
 
 
 
