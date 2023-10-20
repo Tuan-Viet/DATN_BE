@@ -19,7 +19,7 @@
 //         sold: {
 //             type: Number,
 //             required: true,
-//             min: 0,
+//             default: 0,
 //         },
 //         quantity: {
 //             type: Number,
