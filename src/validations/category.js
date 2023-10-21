@@ -1,5 +1,8 @@
 import joi from "joi";
 
 export const categorySchema = joi.object({
-    name: joi.string().required().min(3).max(255)
+    _id: joi.string(),
+    name: joi.string().required().min(3).max(255),
+    image: joi.array(),
+    products: joi.array(),
 })
