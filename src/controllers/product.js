@@ -1,6 +1,7 @@
-import Category from "../models/category";
-import Product from "../models/product";
-import { productSchema } from "../validations/product";
+import Category from "../models/category.js";
+import Product from "../models/product.js";
+import ProductDetail from "../models/product_detail.js";
+import { productSchema } from "../validations/product.js";
 export const getAll = async (req, res) => {
     // req.query._sort => price
     const {
@@ -83,22 +84,50 @@ export const getOne = async (req, res) => {
 };
 export const create = async (req, res) => {
     try {
-        const { error } = productSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
-        const product = await Product.create(req.body);
+        // const { error } = productSchema.validate(req.body);
+        // if (error) {
+        //     res.json({
+        //         message: error.details[0].message,
+        //     });
+        // }
+        const { title, price, description, discount, images, categoryId, variants } = req.body
+        const newProduct = { title, price, description, discount, images, categoryId }
+        // console.log(newProduct);
+
+        // console.log(variants);
+        // console.log(resultArray);
+        const product = await Product.create(newProduct);
         if (!product) {
             return res.status(404).json({
                 message: "Product not found",
             });
         }
+        const productDetails = [];
+
+        variants.forEach(variant => {
+            const { nameColor, imageColor, sold, items } = variant;
+            items.forEach(item => {
+                const { size, quantity } = item;
+                productDetails.push({ product_id: product._id, nameColor, imageColor, sold, size, quantity });
+            });
+        });
         await Category.findByIdAndUpdate(product.categoryId, {
             $addToSet: {
                 products: product._id,
             },
+        });
+        productDetails.forEach(async (newproductDetail) => {
+            const productDetail = await ProductDetail.create(newproductDetail)
+            if (!productDetail) {
+                return res.status(404).json({
+                    message: "productDetail not found",
+                });
+            }
+            await Product.findByIdAndUpdate(productDetail.product_id, {
+                $addToSet: {
+                    variants: productDetail._id,
+                },
+            });
         });
         return res.status(200).json({
             message: "Product created successfully",
@@ -125,15 +154,11 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { error } = productSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
+        const { title, price, description, discount, images, categoryId, variants } = req.body
+        const newProduct = { title, price, description, discount, images, categoryId }
         const product = await Product.findOneAndUpdate(
             { _id: req.params.id },
-            req.body,
+            newProduct,
             { new: true }
         );
         if (!product) {
@@ -141,8 +166,56 @@ export const update = async (req, res) => {
                 message: "Product not found",
             });
         }
+        const productDetails = [];
+
+        variants.forEach(variant => {
+            if (variant.product_id) {
+                const { nameColor, imageColor, sold, items, product_id } = variant;
+                items.forEach(item => {
+                    if (item._id) {
+                        const { size, quantity, _id } = item;
+                        productDetails.push({ _id, product_id, nameColor, imageColor, sold, size, quantity });
+                    } else {
+                        const { size, quantity } = item;
+                        productDetails.push({ product_id, nameColor, imageColor, sold, size, quantity });
+                    }
+                });
+            } else {
+                const { nameColor, imageColor, sold, items } = variant;
+                items.forEach(item => {
+                    const { size, quantity } = item;
+                    productDetails.push({ product_id: product.id, nameColor, imageColor, sold, size, quantity });
+                });
+            }
+        });
+        productDetails.forEach(async (newproductDetail) => {
+            if (!newproductDetail._id && !newproductDetail.product_id) {
+                const productDetail = await ProductDetail.create(newproductDetail)
+                if (!productDetail) {
+                    return res.status(404).json({
+                        message: "productDetail not found",
+                    });
+                }
+                await Product.findByIdAndUpdate(productDetail.product_id, {
+                    $addToSet: {
+                        variants: productDetail._id,
+                    },
+                });
+            } else {
+                const productDetail = await ProductDetail.findOneAndUpdate(
+                    { _id: newproductDetail._id },
+                    newproductDetail,
+                    { new: true }
+                );
+                if (!productDetail) {
+                    return res.status(404).json({
+                        message: "productDetail not found",
+                    });
+                }
+            }
+        });
         return res.status(200).json({
-            message: "Product updated successfully",
+            message: "Product created successfully",
             data: product,
         });
     } catch (error) {
