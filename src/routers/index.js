@@ -11,7 +11,7 @@ import routerVoucher from "./voucher.js"
 const router = express.Router()
 
 router.use('/products', routerProduct)
-router.use('/productDetails', routerProductDetail)
+router.use('/productdetails', routerProductDetail)
 router.use('/categories', routerCategory)
 router.use('/images', routerImages)
 router.use('/sizes', routerSize)

@@ -52,7 +52,7 @@ export const create = async (req, res) => {
     }
     return res.status(200).json({
       message: "thanh cong",
-      data: category,
+       category,
     });
   } catch (error) {
     return res.status(500).json({
@@ -100,10 +100,9 @@ export const remove = async (req, res) => {
         message: "Xóa không thành công!",
       });
     }
-    return res.status(200).json({
-      message: "Thành công",
-      data: category,
-    });
+    return res.status(200).json(
+       category,
+);
   } catch (error) {
     return res.status(500).json({
       message: "Lỗi server",
@@ -133,7 +132,7 @@ export const update = async (req, res) => {
     }
     return res.status(200).json({
       message: "thanh cong",
-      data: category,
+       category,
     });
   } catch (error) {
     return res.status(500).json({
@@ -178,10 +177,9 @@ export const deleteCategories = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      message: "Thành công",
-      data: result,
-    });
+    return res.status(200).json(
+       result,
+);
   } catch (error) {
     return res.status(500).json({
       message: "Lỗi server",

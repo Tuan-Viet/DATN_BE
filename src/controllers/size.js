@@ -15,10 +15,9 @@ export const create = async (req, res) => {
                 message: "them khong thanh cong!"
             })
         }
-        return res.status(200).json({
-            message: 'thanh cong',
-            data: size
-        })
+        return res.status(200).json(
+            size
+       )
     } catch (error) {
         return res.status(500).json({
             message: 'loi server',
@@ -35,10 +34,9 @@ export const remove = async (req, res) => {
                 message: "xoa khong thanh cong!"
             })
         }
-        return res.status(200).json({
-            message: 'thanh cong',
-            data: category
-        })
+        return res.status(200).json(
+            category
+    )
     } catch (error) {
         return res.status(500).json({
             message: 'loi server',
