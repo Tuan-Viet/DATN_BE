@@ -142,6 +142,7 @@ export const create = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const product = await Product.findOneAndDelete({ _id: req.params.id });
+        await ProductDetail.deleteMany({ product_id: product._id })
         return res.status(200).json({
             message: "Product delete successfully",
             data: product,
@@ -189,7 +190,7 @@ export const update = async (req, res) => {
             }
         });
         productDetails.forEach(async (newproductDetail) => {
-            if (!newproductDetail._id && !newproductDetail.product_id) {
+            if (!newproductDetail._id || !newproductDetail.product_id) {
                 const productDetail = await ProductDetail.create(newproductDetail)
                 if (!productDetail) {
                     return res.status(404).json({
