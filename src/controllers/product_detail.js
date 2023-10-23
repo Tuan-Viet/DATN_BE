@@ -44,10 +44,9 @@ export const get = async (req, res) => {
                 message: "productDetail not found",
             });
         }
-        return res.status(200).json({
-            message: "productDetail found successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -74,10 +73,9 @@ export const create = async (req, res) => {
                 productDetails: productDetail._id,
             },
         });
-        return res.status(200).json({
-            message: "productDetail created successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -87,10 +85,9 @@ export const create = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const productDetail = await ProductDetail.findOneAndDelete({ _id: req.params.id });
-        return res.status(200).json({
-            message: "productDetail delete successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -115,10 +112,9 @@ export const update = async (req, res) => {
                 message: "productDetail not found",
             });
         }
-        return res.status(200).json({
-            message: "productDetail updated successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
