@@ -21,7 +21,7 @@ export const getCategories = async (req, res) => {
 };
 export const getCategory = async (req, res) => {
   try {
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findById(req.params.id).populate("products");
     if (!category) {
       return res.status(404).json({
         message: "khong tim thay danh muc !",
