@@ -39,3 +39,18 @@ export const signinSchema = Joi.object({
   }),
   remember: Joi.boolean().default('false')
 });
+
+export const userInfoSchema = Joi.object({
+  phone: Joi.string().required(),
+  fullname: Joi.string().required(),
+  birthday: Joi.string(),
+  height: Joi.number(),
+  weight: Joi.number(),
+  gender: Joi.string(),
+});
+
+export const changePasswordSchema = Joi.object({
+  oldPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+  confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required()
+});
