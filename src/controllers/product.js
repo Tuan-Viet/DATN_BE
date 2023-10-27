@@ -116,14 +116,14 @@ export const create = async (req, res) => {
                 products: product._id,
             },
         });
-        productDetails.forEach(async (newproductDetail) => {
+        await productDetails.forEach(async (newproductDetail) => {
             const productDetail = await ProductDetail.create(newproductDetail)
             if (!productDetail) {
                 return res.status(404).json({
                     message: "productDetail not found",
                 });
             }
-            await Product.findByIdAndUpdate(productDetail.product_id, {
+            const newProduct = await Product.findByIdAndUpdate(productDetail.product_id, {
                 $addToSet: {
                     variants: productDetail._id,
                 },
