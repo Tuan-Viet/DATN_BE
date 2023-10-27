@@ -22,6 +22,7 @@ export const getAll = async (req, res) => {
         sort: {
             [_sort]: _order === "desc" ? "-1" : "1",
         },
+        populate: "categoryId",
     };
     try {
         const { docs: products } = await Product.paginate(searchQuery, optinos);
@@ -48,10 +49,9 @@ export const get = async (req, res) => {
                 message: "Product not found",
             });
         }
-        return res.status(200).json({
-            message: "Product found successfully",
-            data: product,
-        });
+        return res.status(200).json(
+            product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -72,10 +72,10 @@ export const getOne = async (req, res) => {
                 message: "Product not found",
             });
         }
-        return res.status(200).json({
-            message: "Product found successfully",
-            data: product,
-        });
+        return res.status(200).json(
+
+            product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -129,10 +129,8 @@ export const create = async (req, res) => {
                 },
             });
         });
-        return res.status(200).json({
-            message: "Product created successfully",
-            data: product,
-        });
+        return res.status(200).json(product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -142,11 +140,9 @@ export const create = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const product = await Product.findOneAndDelete({ _id: req.params.id });
-        await ProductDetail.deleteMany({ product_id: product._id })
-        return res.status(200).json({
-            message: "Product delete successfully",
-            data: product,
-        });
+        return res.status(200).json(
+            product,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -215,10 +211,8 @@ export const update = async (req, res) => {
                 }
             }
         });
-        return res.status(200).json({
-            message: "Product created successfully",
-            data: product,
-        });
+        return res.status(200).json(product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
