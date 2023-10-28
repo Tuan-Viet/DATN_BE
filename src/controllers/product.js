@@ -50,7 +50,7 @@ export const get = async (req, res) => {
             });
         }
         return res.status(200).json(
-           product
+            product
         );
     } catch (error) {
         return res.status(500).json({
@@ -73,8 +73,8 @@ export const getOne = async (req, res) => {
             });
         }
         return res.status(200).json(
-           
-             product
+
+            product
         );
     } catch (error) {
         return res.status(500).json({
@@ -116,21 +116,21 @@ export const create = async (req, res) => {
                 products: product._id,
             },
         });
-        productDetails.forEach(async (newproductDetail) => {
+        await productDetails.forEach(async (newproductDetail) => {
             const productDetail = await ProductDetail.create(newproductDetail)
             if (!productDetail) {
                 return res.status(404).json({
                     message: "productDetail not found",
                 });
             }
-            await Product.findByIdAndUpdate(productDetail.product_id, {
+            const newProduct = await Product.findByIdAndUpdate(productDetail.product_id, {
                 $addToSet: {
                     variants: productDetail._id,
                 },
             });
         });
-        return res.status(200).json( product
-    );
+        return res.status(200).json(product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -186,7 +186,7 @@ export const update = async (req, res) => {
             }
         });
         productDetails.forEach(async (newproductDetail) => {
-            if (!newproductDetail._id && !newproductDetail.product_id) {
+            if (!newproductDetail._id || !newproductDetail.product_id) {
                 const productDetail = await ProductDetail.create(newproductDetail)
                 if (!productDetail) {
                     return res.status(404).json({
