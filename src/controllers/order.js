@@ -47,12 +47,16 @@ export const create = async (req, res) => {
                 message: "Order not found",
             });
         }
-        const orderDetails = [];
-
-        carts.forEach(cart => {
-            const { productDetailId, price, quantity, color, size, totalMoney } = cart
-            orderDetails.push({ orderId: order._id, productDetailId, price, quantity, color, size, totalMoney });
-        });
+        const orderDetails = carts.map(({ productDetailId, price, quantity, color, size, totalMoney }) => ({
+            orderId: order._id,
+            productDetailId,
+            price,
+            quantity,
+            color,
+            size,
+            totalMoney
+        }));
+        console.log(orderDetails);
         await orderDetails.forEach(async (newOrderDetail) => {
             const orderDetail = await OrderDetail.create(newOrderDetail)
             if (!orderDetail) {
