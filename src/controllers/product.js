@@ -153,16 +153,21 @@ export const update = async (req, res) => {
     try {
         const { title, price, description, discount, images, categoryId, variants } = req.body
         const newProduct = { title, price, description, discount, images, categoryId }
-        const product = await Product.findOneAndUpdate(
-            { _id: req.params.id },
-            newProduct,
-            { new: true }
-        );
-        if (!product) {
-            return res.status(404).json({
-                message: "Product not found",
-            });
-        }
+        // Lấy thông tin sản phẩm trước khi cập nhật
+        const product = await Product.findOne({ _id: req.params.id });
+
+        const productIdToRemove = req.params.id;
+
+        // Xóa sản phẩm khỏi danh mục cũ
+        await Category.updateOne({ _id: product.categoryId }, {
+            $pull: { products: productIdToRemove }
+        });
+
+        // Sau đó, thêm sản phẩm vào danh mục mới
+        await Category.updateOne({ _id: categoryId }, {
+            $addToSet: { products: productIdToRemove }
+        });
+
         const productDetails = [];
 
         variants.forEach(variant => {
@@ -211,8 +216,14 @@ export const update = async (req, res) => {
                 }
             }
         });
-        return res.status(200).json(product
+        
+        // Cập nhật thông tin sản phẩm
+        const updatedProduct = await Product.findOneAndUpdate(
+            { _id: req.params.id },
+            newProduct,
+            { new: true }
         );
+        return res.status(200).json(updatedProduct);
     } catch (error) {
         return res.status(500).json({
             message: error,
