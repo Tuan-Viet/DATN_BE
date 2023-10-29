@@ -49,9 +49,10 @@ export const create = async (req, res) => {
         const cart = await Cart.findOne({ productDetailId: req.body.productDetailId })
         if (cart) {
             const newQuantity = cart.quantity + req.body.quantity
+            const newTotalMoney = cart.totalMoney + req.body.totalMoney
             const newCart = await Cart.findOneAndUpdate(
                 { productDetailId: req.body.productDetailId },
-                { quantity: newQuantity },
+                { quantity: newQuantity, totalMoney: newTotalMoney },
                 { new: true }
             );
             if (!newCart) {
