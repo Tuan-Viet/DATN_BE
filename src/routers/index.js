@@ -8,6 +8,8 @@ import routerSize from "./size.js"
 import routerColor from "./color.js"
 import routerVoucher from "./voucher.js"
 import routerCart from "./cart.js"
+import routerOrder from "./order.js"
+import routerOrderDetail from "./orderDetail.js"
 
 const router = express.Router()
 
@@ -20,6 +22,8 @@ router.use('/colors', routerColor)
 router.use('/vouchers', routerVoucher)
 router.use("/auth", routerAuth);
 router.use('/carts', routerCart)
+router.use('/orders', routerOrder)
+router.use('/orderDetails', routerOrderDetail)
 
 
 
