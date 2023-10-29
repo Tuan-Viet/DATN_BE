@@ -168,12 +168,6 @@ export const update = async (req, res) => {
             $addToSet: { products: productIdToRemove }
         });
 
-        // Cập nhật thông tin sản phẩm
-        const updatedProduct = await Product.findOneAndUpdate(
-            { _id: req.params.id },
-            newProduct,
-            { new: true }
-        );
         const productDetails = [];
 
         variants.forEach(variant => {
@@ -222,6 +216,13 @@ export const update = async (req, res) => {
                 }
             }
         });
+        
+        // Cập nhật thông tin sản phẩm
+        const updatedProduct = await Product.findOneAndUpdate(
+            { _id: req.params.id },
+            newProduct,
+            { new: true }
+        );
         return res.status(200).json(updatedProduct);
     } catch (error) {
         return res.status(500).json({
