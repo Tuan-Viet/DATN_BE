@@ -21,11 +21,9 @@ const orderSchema = new mongoose.Schema(
         },
         vourcher_code: {
             type: String,
-            required: true,
         },
         note: {
             type: String,
-            required: true
         },
         status: {
             type: Number,
