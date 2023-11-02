@@ -56,12 +56,12 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { error } = productDetailSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
+        // const { error } = productDetailSchema.validate(req.body);
+        // if (error) {
+        //     res.json({
+        //         message: error.details[0].message,
+        //     });
+        // }
         const productDetail = await ProductDetail.create(req.body);
         if (!productDetail) {
             return res.status(404).json({
@@ -96,12 +96,12 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { error } = productDetailSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
+        // const { error } = productDetailSchema.validate(req.body);
+        // if (error) {
+        //     res.json({
+        //         message: error.details[0].message,
+        //     });
+        // }
         const productDetail = await ProductDetail.findOneAndUpdate(
             { _id: req.params.id },
             req.body,
