@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const userSchema = new mongoose.Schema(
   {
     email: { type: String },
@@ -11,7 +10,10 @@ const userSchema = new mongoose.Schema(
       district: String,
       ward: String,
     },
-    addresses: [{ type: mongoose.Types.ObjectId, ref: "Address" }],
+    addresses: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Address' 
+    }],
     password: { type: String, required: true },
     birthday: String,
     last_login: Date,
@@ -25,9 +27,10 @@ const userSchema = new mongoose.Schema(
     },
     voucherwallet: [
       {
-        type: mongoose.Types.ObjectId, ref: "Voucher"
-      }
-    ]
+        type: mongoose.Types.ObjectId,
+        ref: "Voucher",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -35,12 +38,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.path('email').validate(function(value) {
+userSchema.path("email").validate(function (value) {
   return value || this.phone;
-}, 'Phải có ít nhất một trong email hoặc phone');
+}, "Phải có ít nhất một trong email hoặc phone");
 
-userSchema.path('phone').validate(function(value) {
+userSchema.path("phone").validate(function (value) {
   return value || this.email;
-}, 'Phải có ít nhất một trong email hoặc phone');
+}, "Phải có ít nhất một trong email hoặc phone");
 
 export default mongoose.model("User", userSchema);

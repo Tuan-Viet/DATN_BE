@@ -1,5 +1,5 @@
-import Cart from "../models/cart";
-import { cartSchema } from "../validations/cart";
+import Cart from "../models/cart.js";
+import { cartSchema } from "../validations/cart.js";
 export const getAll = async (req, res) => {
     try {
         // const { docs: carts } = await Cart.paginate(optinos);

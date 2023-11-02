@@ -21,7 +21,6 @@ const orderSchema = new mongoose.Schema(
         },
         vourcher_code: {
             type: String,
-            required: true,
         },
         note: {
             type: String,
@@ -32,7 +31,7 @@ const orderSchema = new mongoose.Schema(
             default: 1,
         },
         pay_method: {
-            type: Number,
+            type: String,
             required: true,
         },
         orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],

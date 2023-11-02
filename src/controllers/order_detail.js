@@ -1,5 +1,5 @@
-import Order from '../models/order'
-import OrderDetail from '../models/order_detail'
+import Order from '../models/order.js'
+import OrderDetail from '../models/order_detail.js'
 
 export const getAll = async (req, res) => {
     const {
