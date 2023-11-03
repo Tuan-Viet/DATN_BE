@@ -97,12 +97,6 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { error } = cartSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
         const cart = await Cart.findOneAndUpdate(
             { _id: req.params.id },
             req.body,
