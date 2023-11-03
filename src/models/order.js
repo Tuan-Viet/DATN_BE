@@ -3,6 +3,10 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const orderSchema = new mongoose.Schema(
     {
+        userId: {
+            type: String,
+            required: true,
+        },
         fullName: {
             type: String,
             required: true,
