@@ -111,12 +111,12 @@ export const vnpayIpn = async(req, res, next) => {
           //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
           if (rspCode == "00") {
             //thanh cong
-            await Order.updateOne({ orderId: orderId }, { paymentStatus: 1 });
+            await Order.updateOne({ _id: orderId }, { paymentStatus: 1 });
             // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           } else {
             //that bai
-            await Order.updateOne({ orderId: orderId }, { paymentStatus: 2 });
+            await Order.updateOne({ _id: orderId }, { paymentStatus: 2 });
             // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
