@@ -42,7 +42,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
     },
     paymentStatus: {
-      type: String,
+      type: Number,
       default: 0,
     },
     orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
