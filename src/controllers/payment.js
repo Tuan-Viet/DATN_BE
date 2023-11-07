@@ -107,7 +107,7 @@ export const vnpayIpn = async(req, res, next) => {
     if (checkOrderId) {
       checkOrderId.totalMoney == amount ? checkAmount ==true: checkAmount == false
       if (checkAmount) {
-        if (checkOrderId.paymentStatus == "0") {
+        if (checkOrderId.paymentStatus === "0") {
           //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
           if (rspCode == "00") {
             //thanh cong
