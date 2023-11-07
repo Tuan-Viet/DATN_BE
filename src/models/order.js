@@ -36,7 +36,7 @@ const orderSchema = new mongoose.Schema(
     },
     pay_method: {
       type: String,
-      required: true,
+      // required: true,
     },
     orderId: {
       type: String,

@@ -56,7 +56,6 @@ export const create = async (req, res) => {
             size,
             totalMoney
         }));
-        console.log(orderDetails);
         await orderDetails.forEach(async (newOrderDetail) => {
             const orderDetail = await OrderDetail.create(newOrderDetail)
             if (!orderDetail) {

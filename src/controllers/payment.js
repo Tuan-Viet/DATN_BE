@@ -8,7 +8,7 @@ const config = {
     vnp_HashSecret: "RJRZUERJQDXYYBAXXESGCVHKGDTZXHDB",
     vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
     vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
-    vnp_ReturnUrl: "http://localhost:5173/",
+    vnp_ReturnUrl: "http://localhost:5173/account/orders",
   };
 export const vnpayMethod = (req, res, next) => {
 
@@ -26,7 +26,7 @@ export const vnpayMethod = (req, res, next) => {
   var date = new Date();
 
   var createDate = moment(date).format("YYYYMMDDHHmmss");
-  var orderId = req.body.orderId
+  var orderId = req.body._id
   var amount = req.body.totalMoney;
   var bankCode = 'NCB'
 // req.body.bankCode;
@@ -62,6 +62,8 @@ export const vnpayMethod = (req, res, next) => {
   var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
   vnp_Params["vnp_SecureHash"] = signed;
   vnpUrl += "?" + QueryString.stringify(vnp_Params, { encode: false });
+  // const redirectUrl = returnUrl+ vnp_Params.vnp_TxnRef
+  
   // res.redirect(vnpUrl)
   res.status(200).json(vnpUrl);
 };
@@ -82,9 +84,7 @@ function sortObject(obj) {
 }
 
 export const vnpayIpn = async(req, res, next) => {
-  console.log('ok');
   var vnp_Params = req.query;
-  console.log(vnp_Params);
   var secureHash = vnp_Params["vnp_SecureHash"];
 
   delete vnp_Params["vnp_SecureHash"];
@@ -101,8 +101,7 @@ export const vnpayIpn = async(req, res, next) => {
   if (secureHash === signed) {
     var orderId = vnp_Params["vnp_TxnRef"];
     const amount = vnp_Params["vnp_Amount"];
-    const checkOrderId = await Order.findOne({ orderId: orderId });
-    console.log(checkOrderId);
+    const checkOrderId = await Order.findOne({ _id: orderId });
 
     var rspCode = vnp_Params["vnp_ResponseCode"]; //kiểm tra checksum
     if (checkOrderId) {
