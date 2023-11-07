@@ -39,8 +39,8 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts } = req.body
-        const newOrder = { fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney }
+        const { fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts, orderId } = req.body
+        const newOrder = { fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, orderId }
         const order = await Order.create(newOrder);
         if (!order) {
             return res.status(404).json({

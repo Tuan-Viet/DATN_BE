@@ -2,6 +2,7 @@ import dateFormat from "dateformat";
 import QueryString from "qs";
 import crypto from "crypto";
 import moment from "moment";
+import Order from "../models/order";
 const config = {
     vnp_TmnCode: "32JQJOZU",
     vnp_HashSecret: "RJRZUERJQDXYYBAXXESGCVHKGDTZXHDB",
@@ -25,7 +26,7 @@ export const vnpayMethod = (req, res, next) => {
   var date = new Date();
 
   var createDate = moment(date).format("YYYYMMDDHHmmss");
-  var orderId = moment(date).format("DDHHmmss");
+  var orderId = req.body.orderId
   var amount = req.body.totalMoney;
   var bankCode = 'NCB'
 // req.body.bankCode;
@@ -80,7 +81,7 @@ function sortObject(obj) {
   return sorted;
 }
 
-export const vnpayIpn = (req, res, next) => {
+export const vnpayIpn = async(req, res, next) => {
   console.log('ok');
   var vnp_Params = req.query;
   console.log(vnp_Params);
@@ -94,24 +95,29 @@ export const vnpayIpn = (req, res, next) => {
   var signData = QueryString.stringify(vnp_Params, { encode: false });
   var hmac = crypto.createHmac("sha512", secretKey);
   var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
-  let paymentStatus = '0';
-  let checkOrderId = true;
+
+  
   let checkAmount = true;
   if (secureHash === signed) {
     var orderId = vnp_Params["vnp_TxnRef"];
+    const amount = vnp_Params["vnp_Amount"];
+    const checkOrderId = await Order.findOne({ orderId: orderId });
+    console.log(checkOrderId);
+
     var rspCode = vnp_Params["vnp_ResponseCode"]; //kiểm tra checksum
     if (checkOrderId) {
+      checkOrderId.totalMoney == amount ? checkAmount ==true: checkAmount == false
       if (checkAmount) {
-        if (paymentStatus == "0") {
+        if (checkOrderId.paymentStatus == "0") {
           //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
           if (rspCode == "00") {
             //thanh cong
-            //paymentStatus = '1'
+            await Order.updateOne({ orderId: orderId }, { paymentStatus: '1' });
             // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           } else {
             //that bai
-            //paymentStatus = '2'
+            await Order.updateOne({ orderId: orderId }, { paymentStatus: '2' });
             // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
