@@ -2,7 +2,7 @@ import dateFormat from "dateformat";
 import QueryString from "qs";
 import crypto from "crypto";
 import moment from "moment";
-import Order from "../models/order";
+import Order from "../models/order.js";
 const config = {
     vnp_TmnCode: "32JQJOZU",
     vnp_HashSecret: "RJRZUERJQDXYYBAXXESGCVHKGDTZXHDB",
