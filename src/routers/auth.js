@@ -1,11 +1,12 @@
 import express from "express";
-import { addAddress, changePassword, deleteAddress, deleteUserPermanently, getAllUsersAsAdmin, getUser, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
+import { addAddress, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, getAllUsersAsAdmin, getUser, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
 // import passport from "passport";
 import { createReview, deleteReview, getReviewById, getReviews, updateReview } from "../controllers/review.js";
 import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPermission.js';
 
 const routerAuth = express.Router();
 
+routerAuth.get('/confirm-registration/:confirmationCode', confirmRegistration);
 routerAuth.post("/register", signup);
 routerAuth.post("/login", signin);
 

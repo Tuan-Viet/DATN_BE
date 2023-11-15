@@ -10,6 +10,7 @@ import {
   signupSchema,
   userInfoSchema,
 } from "../validations/auth.js";
+import { sendConfirmationEmail } from "./mailer.js";
 dotenv.config();
 
 const { SECRET_CODE } = process.env;
@@ -43,7 +44,10 @@ export const signup = async (req, res) => {
     const expiresIn = req.body.remember ? "30d" : "1d";
 
     const token = jwt.sign({ id: user._id }, SECRET_CODE, { expiresIn });
-
+    const confirmationCode = jwt.sign({ id: user._id }, SECRET_CODE, {
+      expiresIn: "1h",
+    });
+    await sendConfirmationEmail(user.email, confirmationCode);
     user.password = undefined;
     return res.status(201).json({
       message: "success",
@@ -264,11 +268,14 @@ export const addAddress = async (req, res) => {
 
     if (isDefault) {
       // Tìm và cập nhật địa chỉ mặc định hiện tại của người dùng (nếu có)
-      await User.updateOne({ _id: userId, "addresses.isDefault": true }, { $set: { "addresses.$.isDefault": false } });
+      await User.updateOne(
+        { _id: userId, "addresses.isDefault": true },
+        { $set: { "addresses.$.isDefault": false } }
+      );
     }
 
     const newAddress = await Address.create({
-      user_id:userId,
+      user_id: userId,
       address,
       fullname,
       phone,
@@ -286,8 +293,8 @@ export const addAddress = async (req, res) => {
 };
 export const deleteAddress = async (req, res) => {
   try {
-    const { id } = req.params; 
-    const userId = req.user._id
+    const { id } = req.params;
+    const userId = req.user._id;
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
@@ -313,7 +320,7 @@ export const updateAddress = async (req, res) => {
     // Cập nhật trường "address" của địa chỉ cụ thể
     const newAddress = await Address.findByIdAndUpdate(
       id,
-      {  address, isDefault, fullname, phone  },
+      { address, isDefault, fullname, phone },
       { new: true }
     );
     return res.status(200).json(newAddress);
@@ -347,5 +354,30 @@ export const getUser = async (req, res) => {
     return res.status(500).json({
       message: "Lỗi trong quá trình lấy thông tin người dùng: " + error.message,
     });
+  }
+};
+
+export const confirmRegistration = async (req, res) => {
+  try {
+    const { confirmationCode } = req.params;
+    const decodedToken = jwt.verify(confirmationCode, SECRET_CODE);
+    console.log(decodedToken);
+    const userId = decodedToken.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Người dùng không tồn tại" });
+    }
+
+    if (user.isActive) {
+      return res
+        .status(400)
+        .json({ error: "Tài khoản đã được xác nhận trước đó" });
+    }
+    user.isActive = true;
+    await user.save();
+
+    return res.status(200).json({ message: "Xác nhận đăng ký thành công" });
+  } catch (error) {
+    return res.status(500).json({ message: "Lỗi server" });
   }
 };
