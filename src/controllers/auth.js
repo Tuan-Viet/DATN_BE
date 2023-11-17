@@ -10,7 +10,7 @@ import {
   signupSchema,
   userInfoSchema,
 } from "../validations/auth.js";
-import { sendConfirmationEmail } from "./mailer.js";
+import { forgotPasswordMail, sendConfirmationEmail } from "./mailer.js";
 dotenv.config();
 
 const { SECRET_CODE } = process.env;
@@ -40,12 +40,11 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Kiểm tra nếu req.body.remember là true thì đặt thời hạn của token là 30 ngày, ngược lại là 1 ngày.
     const expiresIn = req.body.remember ? "30d" : "1d";
 
     const token = jwt.sign({ id: user._id }, SECRET_CODE, { expiresIn });
     const confirmationCode = jwt.sign({ id: user._id }, SECRET_CODE, {
-      expiresIn: "1h",
+      expiresIn: "365d",
     });
     await sendConfirmationEmail(user.email, confirmationCode);
     user.password = undefined;
@@ -78,6 +77,11 @@ export const signin = async (req, res) => {
       return res.status(400).json({
         messages: "Email không tồn tại",
       });
+    }
+    if (!user.isActive){
+      return res.status(400).json({
+        messages: "Taì khoản chưa được xác thực"
+      })
     }
 
     const isMatch = await bcrypt.compare(req.body.password, user.password);
@@ -379,5 +383,63 @@ export const confirmRegistration = async (req, res) => {
     return res.status(200).json({ message: "Xác nhận đăng ký thành công" });
   } catch (error) {
     return res.status(500).json({ message: "Lỗi server" });
+  }
+};
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.find({email})
+    console.log(user);
+    if(!user){
+      return res.status(400).json({
+        message: "Tài khoản không tồn tại"
+      })
+    }
+    const token = jwt.sign({ email }, SECRET_CODE, { expiresIn: "1h" });
+
+    await forgotPasswordMail(email, token)
+
+
+    return res.status(200).json({
+      message: "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Lỗi khi xử lý yêu cầu.",
+      error: error.message,
+    });
+  }
+};
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params
+    const { newPassword, confirmNewPassword } = req.body;
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Mật khẩu mới không khớp." });
+    }
+
+    const decodedToken = jwt.verify(token, SECRET_CODE);
+    const { email } = decodedToken;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Đặt lại mật khẩu thành công.",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Token đặt lại không hợp lệ hoặc đã hết hạn.",
+      error: error.message,
+    });
   }
 };

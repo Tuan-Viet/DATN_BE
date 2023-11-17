@@ -1,5 +1,5 @@
 import express from "express";
-import { addAddress, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, getAllUsersAsAdmin, getUser, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
+import { addAddress, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, forgotPassword, getAllUsersAsAdmin, getUser, resetPassword, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
 // import passport from "passport";
 import { createReview, deleteReview, getReviewById, getReviews, updateReview } from "../controllers/review.js";
 import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPermission.js';
@@ -7,8 +7,12 @@ import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPe
 const routerAuth = express.Router();
 
 routerAuth.get('/confirm-registration/:confirmationCode', confirmRegistration);
+routerAuth.get('/reset-password/:token', resetPassword);
+
 routerAuth.post("/register", signup);
 routerAuth.post("/login", signin);
+routerAuth.post("/user/forgotPassword", forgotPassword);
+
 
 routerAuth.get("/users",checkPermission, getAllUsersAsAdmin);
 routerAuth.patch("/user/:id/update", updateUser);

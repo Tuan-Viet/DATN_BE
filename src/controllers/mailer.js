@@ -56,3 +56,30 @@ export const sendConfirmationEmail = async (userEmail, confirmationCode) => {
     console.error('Error sending confirmation email:', error);
   }
 };
+export const forgotPasswordMail  = async (userEmail, token) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: "hustle.nodemail@gmail.com",
+        pass: "gntgzxkqcefgjsvy",
+      },
+    });
+
+    const confirmationLink = `http://localhost:8080/api/auth/forgotPassword/${token}`;
+
+    const mailOptions = {
+      from: 'hustle.nodemail@gmail.com',
+      to: userEmail,
+      subject: 'Quên mật khẩu',
+      html: `
+        <p>Vui lòng <a href="${confirmationLink}">click vào đây</a> để đặt lại mật khẩu của bạn.</p>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.response);
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+  }
+};
