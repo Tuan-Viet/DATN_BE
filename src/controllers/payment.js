@@ -30,7 +30,7 @@ export const vnpayMethod = (req, res, next) => {
   var amount = req.body.totalMoney;
   var bankCode = 'NCB'
 // req.body.bankCode;
-  var orderInfo = req.body.note?req.body.note: "";
+  var orderInfo = req.body.note?req.body.note: "Thanh toan VNPAY";
   var orderType = req.body.pay_method;
   var locale = req.body.language;
   if (locale === null || locale === ""|| locale === undefined) {
