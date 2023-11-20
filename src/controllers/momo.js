@@ -54,7 +54,7 @@
 // }
 // //Send the request and get the response
 // const req = https.request(options, res => {
-//     console.log(`Status: ${res.statusCode}`);
+//     console.log(`Status: ${return res.statusCode}`);
 //     console.log(`Headers: ${JSON.stringify(res.headers)}`);
 //     res.setEncoding('utf8');
 //     res.on('data', (body) => {
@@ -77,6 +77,8 @@
 // req.end();
 import axios from "axios";
 import crypto from "crypto";
+import Order from "../models/order.js";
+
 
 export async function createPayment(requestBody) {
     try {
@@ -128,7 +130,7 @@ export async function handleCreatePayment(req, res) {
       res.redirect(payUrl);
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).send('Internal Server Error');
+      return res.status(500).send('Internal Server Error');
     }
   }
 
@@ -140,17 +142,17 @@ export async function handleCreatePayment(req, res) {
   
     return expectedSignature === signature;
   }
-  export const momoIpn = (req, res) => {
+  export const momoIpn = async(req, res) => {
     try {
       const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
         console.log(JSON.stringify(req.body));
       // Xác thực chữ ký
-      const isSignatureValid = verifySignature(JSON.stringify(req.body), req.headers['signature'], secretKey);
+      const isSignatureValid = verifySignature(JSON.stringify(req.body), req.body.signature, secretKey);
   
       if (!isSignatureValid) {
         // Chữ ký không hợp lệ, có thể bị tấn công giả mạo
         console.error('Invalid signature');
-        return res.status(400).send('Invalid signature');
+        return  res.status(400).send('Invalid signature');
       }
   
       // Xác định trạng thái giao dịch
@@ -166,25 +168,28 @@ export async function handleCreatePayment(req, res) {
       const payType = req.body.payType;
       const responseTime = req.body.responseTime;
       const extraData = req.body.extraData;
-  
-      // Gửi phản hồi ngay lập tức để MoMo biết rằng thông báo đã được xử lý
-      res.status(200).send('OK');
-  
-      // Xử lý theo trạng thái của giao dịch
-      switch (transactionStatus) {
-        case 'SUCCESS':
-          // Giao dịch thành công, thực hiện các bước cần thiết
-          break;
-        case 'FAILED':
-          // Giao dịch thất bại, thực hiện các bước cần thiết
-          break;
-        // Thêm các trạng thái khác nếu cần thiết
-        default:
-          // Trạng thái không xác định, xử lý theo tình huống cụ thể
-          break;
+      let checkAmount = true;
+      const checkOrderId = await Order.findOne({ _id: orderId });
+
+      if (checkOrderId){
+      checkOrderId.totalMoney == amount ? checkAmount = true: checkAmount = false
+      if (checkAmount) {
+        if (checkOrderId.paymentStatus === 0) {
+            if (resultCode === 0){
+            await Order.updateOne({ _id: orderId }, { paymentStatus: 1 });
+                return res.status(204)
+            }else {
+                await Order.findByIdAndDelete(orderId)
+                return res.status(204)
+            }
+            
+        }
+    }
       }
+      
+
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).send('Internal Server Error');
+      return res.status(500).send('Internal Server Error');
     }
   };

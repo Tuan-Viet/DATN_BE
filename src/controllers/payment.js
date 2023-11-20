@@ -121,6 +121,7 @@ export const vnpayIpn = async(req, res, next) => {
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
         } else {
+          await Order.findByIdAndDelete(orderId)
           res
             .status(200)
             .json({
