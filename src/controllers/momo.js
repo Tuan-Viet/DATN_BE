@@ -95,7 +95,7 @@ export async function handleCreatePayment(req, res) {
       const orderId = req.body._id;
       const orderInfo = "pay with MoMo";
       const redirectUrl = "https://momo.vn/return";
-      const ipnUrl = "http://localhost:8080/api/paymentMethod/momo_ipn";
+      const ipnUrl = "https://datn-be-gy1y.onrender.com/api/paymentMethod/momo_ipn";
       const amount = req.body.totalMoney;
       const requestType = "payWithATM";
       const extraData = "";
