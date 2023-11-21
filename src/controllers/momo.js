@@ -72,7 +72,7 @@ export async function handleCreatePayment(req, res) {
 
     const payUrl = await createPayment(requestBody);
 
-    res.redirect(payUrl);
+    return res.status(200).json(payUrl);
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).send("Internal Server Error");
