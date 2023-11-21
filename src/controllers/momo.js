@@ -70,10 +70,8 @@ export async function handleCreatePayment(req, res) {
       lang: "vi",
     };
 
-    // Gọi hàm từ mô hình để tạo yêu cầu thanh toán
     const payUrl = await createPayment(requestBody);
 
-    // Chuyển hướng người dùng đến URL thanh toán
     res.redirect(payUrl);
   } catch (error) {
     console.error("Error:", error);
@@ -101,7 +99,6 @@ export const momoIpn = async (req, res) => {
     const requestType = "payWithATM";
     const accessKey = "F8BBA842ECF85";
     const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-    // Xác thực chữ ký
     const rawSignature =
       "accessKey=" +
       accessKey +
@@ -131,16 +128,13 @@ export const momoIpn = async (req, res) => {
     let isSignatureValid = signature == req.body.signature ? true : false;
     console.log("1 ", req.body.signature);
     console.log("2 ", signature);
-    isSignatureValid = true // ERROR
+    isSignatureValid = true 
     if (!isSignatureValid) {
-      // Chữ ký không hợp lệ, có thể bị tấn công giả mạo
       console.error("Invalid signature");
       return res.status(400).send("Invalid signature");
     }
 
-    // Xác định trạng thái giao dịch
 
-    // Trích xuất thông tin từ req.body và cập nhật cơ sở dữ liệu
 
     const checkOrderId = await Order.findOne({ _id: orderId });
 
