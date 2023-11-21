@@ -22,6 +22,7 @@ export const getAll = async (req, res) => {
         sort: {
             [_sort]: _order === "desc" ? "-1" : "1",
         },
+        populate: "categoryId",
     };
     try {
         const { docs: products } = await Product.paginate(searchQuery, optinos);
@@ -48,10 +49,9 @@ export const get = async (req, res) => {
                 message: "Product not found",
             });
         }
-        return res.status(200).json({
-            message: "Product found successfully",
-            data: product,
-        });
+        return res.status(200).json(
+            product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -72,10 +72,10 @@ export const getOne = async (req, res) => {
                 message: "Product not found",
             });
         }
-        return res.status(200).json({
-            message: "Product found successfully",
-            data: product,
-        });
+        return res.status(200).json(
+
+            product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -116,23 +116,21 @@ export const create = async (req, res) => {
                 products: product._id,
             },
         });
-        productDetails.forEach(async (newproductDetail) => {
+        await productDetails.forEach(async (newproductDetail) => {
             const productDetail = await ProductDetail.create(newproductDetail)
             if (!productDetail) {
                 return res.status(404).json({
                     message: "productDetail not found",
                 });
             }
-            await Product.findByIdAndUpdate(productDetail.product_id, {
+            const newProduct = await Product.findByIdAndUpdate(productDetail.product_id, {
                 $addToSet: {
                     variants: productDetail._id,
                 },
             });
         });
-        return res.status(200).json({
-            message: "Product created successfully",
-            data: product,
-        });
+        return res.status(200).json(product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -142,10 +140,9 @@ export const create = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const product = await Product.findOneAndDelete({ _id: req.params.id });
-        return res.status(200).json({
-            message: "Product delete successfully",
-            data: product,
-        });
+        return res.status(200).json(
+            product,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -156,24 +153,34 @@ export const update = async (req, res) => {
     try {
         const { title, price, description, discount, images, categoryId, variants } = req.body
         const newProduct = { title, price, description, discount, images, categoryId }
-        const product = await Product.findOneAndUpdate(
-            { _id: req.params.id },
-            newProduct,
-            { new: true }
-        );
-        if (!product) {
-            return res.status(404).json({
-                message: "Product not found",
-            });
-        }
+        // Lấy thông tin sản phẩm trước khi cập nhật
+        const product = await Product.findOne({ _id: req.params.id });
+
+        const productIdToRemove = req.params.id;
+
+        // Xóa sản phẩm khỏi danh mục cũ
+        await Category.updateOne({ _id: product.categoryId }, {
+            $pull: { products: productIdToRemove }
+        });
+
+        // Sau đó, thêm sản phẩm vào danh mục mới
+        await Category.updateOne({ _id: categoryId }, {
+            $addToSet: { products: productIdToRemove }
+        });
+
         const productDetails = [];
 
         variants.forEach(variant => {
             if (variant.product_id) {
                 const { nameColor, imageColor, sold, items, product_id } = variant;
                 items.forEach(item => {
-                    const { size, quantity } = item;
-                    productDetails.push({ product_id, nameColor, imageColor, sold, size, quantity });
+                    if (item._id) {
+                        const { size, quantity, _id } = item;
+                        productDetails.push({ _id, product_id, nameColor, imageColor, sold, size, quantity });
+                    } else {
+                        const { size, quantity } = item;
+                        productDetails.push({ product_id, nameColor, imageColor, sold, size, quantity });
+                    }
                 });
             } else {
                 const { nameColor, imageColor, sold, items } = variant;
@@ -184,7 +191,7 @@ export const update = async (req, res) => {
             }
         });
         productDetails.forEach(async (newproductDetail) => {
-            if (!newproductDetail.product_id) {
+            if (!newproductDetail._id || !newproductDetail.product_id) {
                 const productDetail = await ProductDetail.create(newproductDetail)
                 if (!productDetail) {
                     return res.status(404).json({
@@ -209,10 +216,14 @@ export const update = async (req, res) => {
                 }
             }
         });
-        return res.status(200).json({
-            message: "Product created successfully",
-            data: product,
-        });
+        
+        // Cập nhật thông tin sản phẩm
+        const updatedProduct = await Product.findOneAndUpdate(
+            { _id: req.params.id },
+            newProduct,
+            { new: true }
+        );
+        return res.status(200).json(updatedProduct);
     } catch (error) {
         return res.status(500).json({
             message: error,

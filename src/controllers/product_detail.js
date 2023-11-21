@@ -38,19 +38,15 @@ export const getAll = async (req, res) => {
 };
 export const get = async (req, res) => {
     try {
-        const productDetail = await ProductDetail.findById(req.params.id).populate(
-            "productId",
-            "productDetials"
-        );
+        const productDetail = await ProductDetail.findById(req.params.id);
         if (!productDetail) {
             return res.status(404).json({
                 message: "productDetail not found",
             });
         }
-        return res.status(200).json({
-            message: "productDetail found successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -60,12 +56,12 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { error } = productDetailSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
+        // const { error } = productDetailSchema.validate(req.body);
+        // if (error) {
+        //     res.json({
+        //         message: error.details[0].message,
+        //     });
+        // }
         const productDetail = await ProductDetail.create(req.body);
         if (!productDetail) {
             return res.status(404).json({
@@ -77,10 +73,9 @@ export const create = async (req, res) => {
                 productDetails: productDetail._id,
             },
         });
-        return res.status(200).json({
-            message: "productDetail created successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -90,10 +85,9 @@ export const create = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const productDetail = await ProductDetail.findOneAndDelete({ _id: req.params.id });
-        return res.status(200).json({
-            message: "productDetail delete successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -102,12 +96,12 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { error } = productDetailSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
+        // const { error } = productDetailSchema.validate(req.body);
+        // if (error) {
+        //     res.json({
+        //         message: error.details[0].message,
+        //     });
+        // }
         const productDetail = await ProductDetail.findOneAndUpdate(
             { _id: req.params.id },
             req.body,
@@ -118,10 +112,9 @@ export const update = async (req, res) => {
                 message: "productDetail not found",
             });
         }
-        return res.status(200).json({
-            message: "productDetail updated successfully",
-            data: productDetail,
-        });
+        return res.status(200).json(
+            productDetail,
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
