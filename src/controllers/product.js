@@ -14,7 +14,7 @@ export const getAll = async (req, res) => {
 
     const searchQuery = {};
     if (_search) {
-        searchQuery.name = { $regex: _search, $options: "i" };
+        searchQuery.title = { $regex: _search, $options: "i" };
     }
     const optinos = {
         page: _page,
@@ -216,7 +216,7 @@ export const update = async (req, res) => {
                 }
             }
         });
-        
+
         // Cập nhật thông tin sản phẩm
         const updatedProduct = await Product.findOneAndUpdate(
             { _id: req.params.id },
@@ -227,6 +227,24 @@ export const update = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message: error,
+        });
+    }
+};
+export const keyWordProduct = async (req, res) => {
+    try {
+        const products = await Product.search({ title: { $regex: req.query.keyword, $options: 'i' } });
+        console.log(products);
+
+        if (!products || products.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy sản phẩm",
+            });
+        }
+
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "Có lỗi xảy ra khi tìm kiếm sản phẩm",
         });
     }
 };

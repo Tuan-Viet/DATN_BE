@@ -33,9 +33,13 @@ const orderSchema = new mongoose.Schema(
             type: Number,
             default: 1,
         },
-        pay_method: {
+        paymentStatus: {
             type: Number,
-            required: true,
+            default: 0
+        },
+        pay_method: {
+            type: String,
+            // default: "0",
         },
         orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
         totalMoney: {

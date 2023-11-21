@@ -1,6 +1,6 @@
 import Order from '../models/order'
 import OrderDetail from '../models/order_detail'
-
+import Cart from "../models/cart"
 export const getAll = async (req, res) => {
     try {
         const orders = await Order.find()
@@ -56,7 +56,7 @@ export const create = async (req, res) => {
             size,
             totalMoney
         }));
-        console.log(orderDetails);
+        // console.log(orderDetails);
         await orderDetails.forEach(async (newOrderDetail) => {
             const orderDetail = await OrderDetail.create(newOrderDetail)
             if (!orderDetail) {
@@ -70,6 +70,11 @@ export const create = async (req, res) => {
                 },
             });
         });
+        const allCart = await Cart.find()
+        const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)
+        await userCart.forEach(async item => {
+            await Cart.findOneAndDelete({ _id: item._id })
+        })
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
