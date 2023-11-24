@@ -2,6 +2,7 @@ import Order from '../models/order.js'
 import Cart from '../models/cart.js'
 import OrderDetail from '../models/order_detail.js'
 import ProductDetail from '../models/product_detail.js';
+import Product from '../models/product.js';
 
 export const getAll = async (req, res) => {
     const {
@@ -69,15 +70,19 @@ export const create = async (req, res) => {
                 message: "Order not found",
             });
         }
-        const orderDetails = carts.map(({ productDetailId, price, quantity, color, size, totalMoney }) => ({
+        const orderDetails = carts.map(async({ productDetailId, price, quantity, color, size, totalMoney }) => {
+            const product = await Product.findOne({ "variants": productDetailId })
+            return {
             orderId: order._id,
             productDetailId,
             price,
+            costPrice: product.costPrice,
             quantity,
             color,
             size,
             totalMoney
-        }));
+        }
+        });
         await orderDetails.forEach(async (newOrderDetail) => {
             const orderDetail = await OrderDetail.create(newOrderDetail)
             if (!orderDetail) {
