@@ -70,21 +70,23 @@ export const create = async (req, res) => {
                 message: "Order not found",
             });
         }
-        const orderDetails = carts.map(async({ productDetailId, price, quantity, color, size, totalMoney }) => {
-            const product = await Product.findOne({ "variants": productDetailId })
+
+        const orderDetails = await Promise.all(carts.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
+            const product = await Product.findOne({ "variants": productDetailId });
             return {
-            orderId: order._id,
-            productDetailId,
-            price,
-            costPrice: product.costPrice,
-            quantity,
-            color,
-            size,
-            totalMoney
-        }
-        });
-        await orderDetails.forEach(async (newOrderDetail) => {
-            const orderDetail = await OrderDetail.create(newOrderDetail)
+                orderId: order._id,
+                productDetailId,
+                price,
+                costPrice: product.costPrice,
+                quantity,
+                color,
+                size,
+                totalMoney
+            };
+        }));
+
+        await Promise.all(orderDetails.map(async (newOrderDetail) => {
+            const orderDetail = await OrderDetail.create(newOrderDetail);
             if (!orderDetail) {
                 return res.status(404).json({
                     message: "orderDetail not found",
@@ -95,7 +97,7 @@ export const create = async (req, res) => {
                     orderDetails: orderDetail._id,
                 },
             });
-            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId })
+            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId });
             await ProductDetail.findByIdAndUpdate(
                 { _id: orderDetail.productDetailId },
                 {
@@ -103,13 +105,16 @@ export const create = async (req, res) => {
                     quantity: productDetail.quantity - orderDetail.quantity
                 },
                 { new: true }
-            )
-        });
+            );
+        }));
+
         const allCart = await Cart.find()
         const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)
-        await userCart.forEach(async item => {
+        
+        await Promise.all(userCart.map(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
-        })
+        }));
+
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
