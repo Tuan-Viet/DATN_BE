@@ -1,5 +1,7 @@
 import Order from '../models/order.js'
 import Cart from '../models/cart.js'
+import User from '../models/user.js'
+import Voucher from '../models/voucher.js'
 import OrderDetail from '../models/order_detail.js'
 import ProductDetail from '../models/product_detail.js';
 import Product from '../models/product.js';
@@ -110,11 +112,19 @@ export const create = async (req, res) => {
 
         const allCart = await Cart.find()
         const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)
-        
+
         await Promise.all(userCart.map(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
         }));
 
+        const vourcher = await Voucher.findOne({ code: vourcher_code })
+        console.log(vourcher);
+        const remove = await User.findOneAndUpdate(
+            { _id: userId },
+            { $pull: { voucherwallet: vourcher._id } },
+            { new: true }
+        )
+        console.log(remove);
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
