@@ -1,5 +1,6 @@
 import Order from '../models/order.js'
 import Cart from '../models/cart.js'
+import User from '../models/user.js'
 import OrderDetail from '../models/order_detail.js'
 import ProductDetail from '../models/product_detail.js';
 import Product from '../models/product.js';
@@ -70,18 +71,18 @@ export const create = async (req, res) => {
                 message: "Order not found",
             });
         }
-        const orderDetails = carts.map(async({ productDetailId, price, quantity, color, size, totalMoney }) => {
+        const orderDetails = carts.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
             const product = await Product.findOne({ "variants": productDetailId })
             return {
-            orderId: order._id,
-            productDetailId,
-            price,
-            costPrice: product.costPrice,
-            quantity,
-            color,
-            size,
-            totalMoney
-        }
+                orderId: order._id,
+                productDetailId,
+                price,
+                costPrice: product.costPrice,
+                quantity,
+                color,
+                size,
+                totalMoney
+            }
         });
         await orderDetails.forEach(async (newOrderDetail) => {
             const orderDetail = await OrderDetail.create(newOrderDetail)
@@ -110,6 +111,14 @@ export const create = async (req, res) => {
         await userCart.forEach(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
         })
+
+        const user = await User.findById({ _id: userId })
+        const vourcher = user.voucherwallet.find(vourcher => vourcher.vourcher_code == vourcher_code)
+        await user.findOneAndDelete(
+            { _id: userId },
+            { $pull: { voucherwallet: vourcher._id } },
+            { new: true }
+        )
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({

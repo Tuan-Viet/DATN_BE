@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import Address from "../models/address.js";
+import Vourcher from "../models/voucher.js";
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -78,7 +79,7 @@ export const signin = async (req, res) => {
         messages: "Email không tồn tại",
       });
     }
-    if (!user.isActive){
+    if (!user.isActive) {
       return res.status(400).json({
         messages: "Taì khoản chưa được xác thực"
       })
@@ -389,9 +390,9 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.find({email})
+    const user = await User.find({ email })
     console.log(user);
-    if(!user){
+    if (!user) {
       return res.status(400).json({
         message: "Tài khoản không tồn tại"
       })
@@ -443,3 +444,26 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
+
+export const addVourcher = async (req, res) => {
+  try {
+    const { userId, vourcherId } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { voucherwallet: vourcherId } },
+      { new: true }
+    );
+    const vourcher = await Vourcher.findById(vourcherId)
+    if (updatedUser) {
+      await Vourcher.findByIdAndUpdate(
+        { _id: vourcherId },
+        { quantity: vourcher.quantity - 1 },
+        { new: true }
+      )
+    }
+    res.status(201).json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server!", error: err });
+  }
+}
