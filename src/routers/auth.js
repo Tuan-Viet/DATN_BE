@@ -1,5 +1,5 @@
 import express from "express";
-import { addAddress, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, forgotPassword, getAllUsersAsAdmin, getUser, resetPassword, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
+import { addAddress, addVourcher, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, forgotPassword, getAllUsersAsAdmin, getUser, resetPassword, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
 // import passport from "passport";
 import { createReview, deleteReview, getReviewById, getReviews, updateReview } from "../controllers/review.js";
 import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPermission.js';
@@ -14,14 +14,14 @@ routerAuth.post("/login", signin);
 routerAuth.post("/user/forgotPassword", forgotPassword);
 
 
-routerAuth.get("/users",checkPermission, getAllUsersAsAdmin);
+routerAuth.get("/users", checkPermission, getAllUsersAsAdmin);
 routerAuth.patch("/user/:id/update", updateUser);
-routerAuth.delete("/users/:id",checkPermission, deleteUserPermanently);
-routerAuth.post("/user/change/password",checkAuthenticatedUser, changePassword);
-routerAuth.post("/user-address/add",checkAuthenticatedUser, addAddress);
-routerAuth.post("/get-user",checkAuthenticatedUser, getUser);
-routerAuth.patch("/user-address/:id/edit",checkAuthenticatedUser, updateAddress);
-routerAuth.delete("/user-address/:id",checkAuthenticatedUser, deleteAddress);
+routerAuth.delete("/users/:id", checkPermission, deleteUserPermanently);
+routerAuth.post("/user/change/password", checkAuthenticatedUser, changePassword);
+routerAuth.post("/user-address/add", checkAuthenticatedUser, addAddress);
+routerAuth.post("/get-user", checkAuthenticatedUser, getUser);
+routerAuth.patch("/user-address/:id/edit", checkAuthenticatedUser, updateAddress);
+routerAuth.delete("/user-address/:id", checkAuthenticatedUser, deleteAddress);
 
 
 
@@ -36,7 +36,7 @@ routerAuth.put("/review/:id", checkAuthenticatedUser, updateReview);
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);
 
-
+routerAuth.put("/add-vourcher", checkAuthenticatedUser, addVourcher);
 
 
 

@@ -50,6 +50,10 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    voucherDiscounted:{
+      type: Number,
+      default: 0
+    },
     deleted: {
       type: Boolean,
       default: false,

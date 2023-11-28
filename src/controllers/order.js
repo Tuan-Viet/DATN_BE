@@ -1,7 +1,10 @@
-import Order from '../models/order'
-import Cart from '../models/cart'
-import OrderDetail from '../models/order_detail'
-import ProductDetail from '../models/product_detail';
+import Order from '../models/order.js'
+import Cart from '../models/cart.js'
+import User from '../models/user.js'
+import Voucher from '../models/voucher.js'
+import OrderDetail from '../models/order_detail.js'
+import ProductDetail from '../models/product_detail.js';
+import Product from '../models/product.js';
 
 export const getAll = async (req, res) => {
     const {
@@ -69,17 +72,23 @@ export const create = async (req, res) => {
                 message: "Order not found",
             });
         }
-        const orderDetails = carts.map(({ productDetailId, price, quantity, color, size, totalMoney }) => ({
-            orderId: order._id,
-            productDetailId,
-            price,
-            quantity,
-            color,
-            size,
-            totalMoney
+
+        const orderDetails = await Promise.all(carts.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
+            const product = await Product.findOne({ "variants": productDetailId });
+            return {
+                orderId: order._id,
+                productDetailId,
+                price,
+                costPrice: product.costPrice,
+                quantity,
+                color,
+                size,
+                totalMoney
+            };
         }));
-        await orderDetails.forEach(async (newOrderDetail) => {
-            const orderDetail = await OrderDetail.create(newOrderDetail)
+
+        await Promise.all(orderDetails.map(async (newOrderDetail) => {
+            const orderDetail = await OrderDetail.create(newOrderDetail);
             if (!orderDetail) {
                 return res.status(404).json({
                     message: "orderDetail not found",
@@ -90,7 +99,7 @@ export const create = async (req, res) => {
                     orderDetails: orderDetail._id,
                 },
             });
-            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId })
+            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId });
             await ProductDetail.findByIdAndUpdate(
                 { _id: orderDetail.productDetailId },
                 {
@@ -98,13 +107,24 @@ export const create = async (req, res) => {
                     quantity: productDetail.quantity - orderDetail.quantity
                 },
                 { new: true }
-            )
-        });
+            );
+        }));
+
         const allCart = await Cart.find()
         const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)
-        await userCart.forEach(async item => {
+
+        await Promise.all(userCart.map(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
-        })
+        }));
+
+        const vourcher = await Voucher.findOne({ code: vourcher_code })
+        console.log(vourcher);
+        const remove = await User.findOneAndUpdate(
+            { _id: userId },
+            { $pull: { voucherwallet: vourcher._id } },
+            { new: true }
+        )
+        console.log(remove);
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
