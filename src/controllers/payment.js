@@ -30,7 +30,7 @@ export const vnpayMethod = (req, res, next) => {
   var amount = req.body.totalMoney;
   var bankCode = 'NCB'
 // req.body.bankCode;
-  var orderInfo = req.body.note;
+  var orderInfo = req.body.note?req.body.note: "Thanh toan VNPAY";
   var orderType = req.body.pay_method;
   var locale = req.body.language;
   if (locale === null || locale === ""|| locale === undefined) {
@@ -108,19 +108,16 @@ export const vnpayIpn = async(req, res, next) => {
       checkOrderId.totalMoney == amount ? checkAmount ==true: checkAmount == false
       if (checkAmount) {
         if (checkOrderId.paymentStatus === 0) {
-          //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
           if (rspCode == "00") {
-            //thanh cong
             await Order.updateOne({ _id: orderId }, { paymentStatus: 1 });
-            // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           } else {
             //that bai
             await Order.updateOne({ _id: orderId }, { paymentStatus: 2 });
-            // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
         } else {
+          await Order.findByIdAndDelete(orderId)
           res
             .status(200)
             .json({

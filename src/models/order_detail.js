@@ -9,8 +9,13 @@ const orderDetailSchema = new mongoose.Schema(
             required: true,
         },
         productDetailId: {
-            type: String,
-            required: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "ProductDetail",
+            required: true,
+        },
+        costPrice:{
+            type: Number,
+            min: 0,
         },
         price: {
             type: Number,

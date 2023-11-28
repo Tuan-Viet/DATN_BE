@@ -12,6 +12,7 @@ import routerOrder from "./order.js"
 import routerOrderDetail from "./orderDetail.js"
 import routerPay from "./payment.js"
 import routerMailer from "./mailer.js"
+import routerStatistic from "./statistic.js"
 
 const router = express.Router()
 
@@ -28,6 +29,8 @@ router.use('/orders', routerOrder)
 router.use('/orderDetails', routerOrderDetail)
 router.use("/paymentMethod", routerPay)
 router.use("/mail", routerMailer)
+router.use("/statistics", routerStatistic)
+
 
 
 
