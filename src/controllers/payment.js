@@ -4,12 +4,12 @@ import crypto from "crypto";
 import moment from "moment";
 import Order from "../models/order.js";
 const config = {
-    vnp_TmnCode: "32JQJOZU",
-    vnp_HashSecret: "RJRZUERJQDXYYBAXXESGCVHKGDTZXHDB",
-    vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
-    vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
-    vnp_ReturnUrl: "http://localhost:5173/account/orders",
-  };
+  vnp_TmnCode: "32JQJOZU",
+  vnp_HashSecret: "RJRZUERJQDXYYBAXXESGCVHKGDTZXHDB",
+  vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+  vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
+  vnp_ReturnUrl: "http://localhost:5173/account/orders",
+};
 export const vnpayMethod = (req, res, next) => {
 
   var ipAddr =
@@ -29,11 +29,11 @@ export const vnpayMethod = (req, res, next) => {
   var orderId = req.body._id
   var amount = req.body.totalMoney;
   var bankCode = 'NCB'
-// req.body.bankCode;
+  // req.body.bankCode;
   var orderInfo = req.body.note;
   var orderType = req.body.pay_method;
   var locale = req.body.language;
-  if (locale === null || locale === ""|| locale === undefined) {
+  if (locale === null || locale === "" || locale === undefined) {
     locale = "vn";
   }
   var currCode = "VND";
@@ -63,7 +63,7 @@ export const vnpayMethod = (req, res, next) => {
   vnp_Params["vnp_SecureHash"] = signed;
   vnpUrl += "?" + QueryString.stringify(vnp_Params, { encode: false });
   // const redirectUrl = returnUrl+ vnp_Params.vnp_TxnRef
-  
+
   // res.redirect(vnpUrl)
   res.status(200).json(vnpUrl);
 };
@@ -83,7 +83,7 @@ function sortObject(obj) {
   return sorted;
 }
 
-export const vnpayIpn = async(req, res, next) => {
+export const vnpayIpn = async (req, res, next) => {
   var vnp_Params = req.query;
   var secureHash = vnp_Params["vnp_SecureHash"];
 
@@ -96,7 +96,7 @@ export const vnpayIpn = async(req, res, next) => {
   var hmac = crypto.createHmac("sha512", secretKey);
   var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
 
-  
+
   let checkAmount = true;
   if (secureHash === signed) {
     var orderId = vnp_Params["vnp_TxnRef"];
@@ -105,7 +105,7 @@ export const vnpayIpn = async(req, res, next) => {
 
     var rspCode = vnp_Params["vnp_ResponseCode"]; //kiểm tra checksum
     if (checkOrderId) {
-      checkOrderId.totalMoney == amount ? checkAmount ==true: checkAmount == false
+      checkOrderId.totalMoney == amount ? checkAmount == true : checkAmount == false
       if (checkAmount) {
         if (checkOrderId.paymentStatus === 0) {
           //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
@@ -116,7 +116,7 @@ export const vnpayIpn = async(req, res, next) => {
             res.status(200).json({ RspCode: "00", Message: "Success" });
           } else {
             //that bai
-            await Order.updateOne({ _id: orderId }, { paymentStatus: 2 });
+            await Order.updateOne({ _id: orderId }, { paymentStatus: 0 });
             // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
