@@ -4,7 +4,6 @@ import "moment-timezone";
 export const productRevenue = async (req, res) => {
   try {
     const productRevenue = await Order.find({
-
     }).populate({
       path: "orderDetails",
       populate: {
@@ -336,7 +335,7 @@ export const orderRevenueBy7Days =async (req, res) => {
       const orderDate = moment(order.createdAt).tz('Asia/Ho_Chi_Minh');
       const today = moment().tz('Asia/Ho_Chi_Minh');
       const sevenDaysAgo = today.clone().subtract(7, 'days');
-
+      console.log(sevenDaysAgo, "hehe" , today);
       // Check if the order is within the last 7 days
       if (orderDate.isBetween(sevenDaysAgo, today, null, '[]')) {
         const day = orderDate.format('YYYY-MM-DD');
@@ -476,3 +475,50 @@ function getQuarter(month) {
     return 'Q4';
   }
 }
+export const orderRevanue = async (req, res) => {
+  try {
+    const orders = await Order.find({}).populate({
+      path: "orderDetails",
+      populate: {
+        path: "productDetailId",
+        populate: {
+          path: "product_id",
+        },
+      },
+    });
+
+    if (!orders) {
+      return res.status(400).json({ message: "Không có kết quả" });
+    }
+
+    let orderStatisticsArray = [];
+
+    orders.forEach((order) => {
+      let totalQuantitySold = 0;
+      let totalRevenue = 0;
+      let totalProfit = 0;
+      let totalCostPrice = 0;
+
+      order.orderDetails.forEach((detail) => {
+        totalQuantitySold += detail.quantity;
+        totalRevenue += detail.totalMoney;
+        totalProfit += (detail.price - detail.costPrice) * detail.quantity;
+        totalCostPrice += detail.costPrice * detail.quantity;
+      });
+
+      orderStatisticsArray.push({
+        orderId: order._id,
+        customerName: order.fullName,
+        totalQuantitySold,
+        totalRevenue,
+        totalProfit,
+        totalCostPrice,
+      });
+    });
+
+    return res.status(200).json(orderStatisticsArray);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Lỗi server" });
+  }
+};
