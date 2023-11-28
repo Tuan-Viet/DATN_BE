@@ -28,7 +28,6 @@ export const checkPermission = async (req, res, next) => {
           });
         }
       }
-      console.log(payload)
 
       // lấy thông tin user từ database
       const user = await User.findById(payload.id);

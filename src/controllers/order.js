@@ -1,9 +1,31 @@
 import Order from '../models/order'
+import Cart from '../models/cart'
 import OrderDetail from '../models/order_detail'
-import Cart from "../models/cart"
+import ProductDetail from '../models/product_detail';
+
 export const getAll = async (req, res) => {
+    const {
+        _page = 1,
+        _limit = 100,
+        _sort = "createdAt",
+        _order = "desc",
+        _search
+    } = req.query;
+
+    const searchQuery = {};
+    if (_search) {
+        searchQuery.name = { $regex: _search, $options: "i" };
+    }
+    const optinos = {
+        page: _page,
+        limit: _limit,
+        sort: {
+            [_sort]: _order === "desc" ? "-1" : "1",
+        },
+    };
     try {
-        const orders = await Order.find()
+        const { docs: orders } = await Order.paginate(searchQuery, optinos);
+        // const orders = await Order.find()
         if (!orders) {
             return res.status(404).json({
                 message: "Order not found",
@@ -39,8 +61,8 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts } = req.body
-        const newOrder = { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney }
+        const { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts, orderId } = req.body
+        const newOrder = { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, orderId }
         const order = await Order.create(newOrder);
         if (!order) {
             return res.status(404).json({
@@ -56,7 +78,6 @@ export const create = async (req, res) => {
             size,
             totalMoney
         }));
-        // console.log(orderDetails);
         await orderDetails.forEach(async (newOrderDetail) => {
             const orderDetail = await OrderDetail.create(newOrderDetail)
             if (!orderDetail) {
@@ -69,6 +90,15 @@ export const create = async (req, res) => {
                     orderDetails: orderDetail._id,
                 },
             });
+            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId })
+            await ProductDetail.findByIdAndUpdate(
+                { _id: orderDetail.productDetailId },
+                {
+                    sold: orderDetail.quantity,
+                    quantity: productDetail.quantity - orderDetail.quantity
+                },
+                { new: true }
+            )
         });
         const allCart = await Cart.find()
         const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)

@@ -10,6 +10,8 @@ import routerVoucher from "./voucher.js"
 import routerCart from "./cart.js"
 import routerOrder from "./order.js"
 import routerOrderDetail from "./orderDetail.js"
+import routerPay from "./payment.js"
+import routerMailer from "./mailer.js"
 
 const router = express.Router()
 
@@ -24,6 +26,8 @@ router.use("/auth", routerAuth);
 router.use('/carts', routerCart)
 router.use('/orders', routerOrder)
 router.use('/orderDetails', routerOrderDetail)
+router.use("/paymentMethod", routerPay)
+router.use("/mail", routerMailer)
 
 
 

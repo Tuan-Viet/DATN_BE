@@ -7,7 +7,7 @@ const categorySchema = new mongoose.Schema({
   },
   images: {
     type: Object,
-    required: true
+    required: true,
   },
   products: [{
     type: mongoose.Schema.Types.ObjectId,
