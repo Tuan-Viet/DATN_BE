@@ -27,9 +27,7 @@ export const getVoucherById = async (req, res) => {
                 message: "Không tìm thấy voucher!",
             });
         }
-        return res.status(200).json(
-            voucher
-        );
+        return res.status(200).json(voucher);
     } catch (err) {
         return res.status(500).json({
             message: 'Lỗi server!',
