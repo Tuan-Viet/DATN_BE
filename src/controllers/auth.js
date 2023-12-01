@@ -1,6 +1,6 @@
 import User from "../models/user.js";
 import Address from "../models/address.js";
-import Vourcher from "../models/voucher.js";
+import Voucher from "../models/voucher.js";
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -123,6 +123,8 @@ export const updateUser = async (req, res) => {
       });
     }
 
+    console.log(value);
+
     const user = await User.findByIdAndUpdate(userId, value, { new: true });
 
     if (!user) {
@@ -144,6 +146,24 @@ export const updateUser = async (req, res) => {
     });
   }
 };
+
+export const getInfoUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate("addresses");
+    user.password = null
+    if (!user) {
+      return res.status(400).json({
+        message: "Không tìm thấy người dùng"
+      });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Lỗi server", error: error.message });
+  }
+};
+
 export const getAllUsersAsAdmin = async (req, res) => {
   try {
     const requestingUser = req.user; // Đảm bảo bạn đã thiết lập thông tin người dùng trong middleware xác thực
@@ -447,17 +467,18 @@ export const resetPassword = async (req, res) => {
 
 export const addVourcher = async (req, res) => {
   try {
-    const { userId, vourcherId } = req.body;
+    // const { userId, vourcherId } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $push: { voucherwallet: vourcherId } },
+      { _id: req.body.userId },
+      { $push: { voucherwallet: req.body.voucherId } },
       { new: true }
     );
-    const vourcher = await Vourcher.findById(vourcherId)
+    // console.log(vourcherId);
+    const vourcher = await Voucher.findById(req.body.voucherId)
     if (updatedUser) {
-      await Vourcher.findByIdAndUpdate(
-        { _id: vourcherId },
+      await Voucher.findByIdAndUpdate(
+        { _id: req.body.voucherId },
         { quantity: vourcher.quantity - 1 },
         { new: true }
       )
