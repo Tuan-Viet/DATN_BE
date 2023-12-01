@@ -31,7 +31,7 @@ router.use('/orderReturns', routerOrderReturn)
 router.use('/orderDetails', routerOrderDetail)
 router.use("/paymentMethod", routerPay)
 router.use("/mail", routerMailer)
-router.use("/statistic", routerStatistic)
+router.use("/statistics", routerStatistic)
 
 
 
