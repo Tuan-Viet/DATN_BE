@@ -56,7 +56,7 @@ export const sendConfirmationEmail = async (userEmail, confirmationCode) => {
     console.error('Error sending confirmation email:', error);
   }
 };
-export const forgotPasswordMail  = async (userEmail, token) => {
+export const forgotPasswordMail = async (userEmail, token) => {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -66,7 +66,7 @@ export const forgotPasswordMail  = async (userEmail, token) => {
       },
     });
 
-    const confirmationLink = `http://localhost:8080/api/auth/forgotPassword/${token}`;
+    const confirmationLink = `http://localhost:5173/resetPassword?token=${token}`;
 
     const mailOptions = {
       from: 'hustle.nodemail@gmail.com',

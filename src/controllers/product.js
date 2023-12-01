@@ -90,8 +90,8 @@ export const create = async (req, res) => {
         //         message: error.details[0].message,
         //     });
         // }
-        const { title, price, description, discount, images, categoryId, variants } = req.body
-        const newProduct = { title, price, description, discount, images, categoryId }
+        const { title, price, description, discount, images, categoryId, variants, hide, costPrice, sku, sizes, colors } = req.body
+        const newProduct = { title, price, description, discount, images, categoryId, hide, costPrice, sku, sizes, colors }
         // console.log(newProduct);
 
         // console.log(variants);
@@ -151,8 +151,8 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { title, price, description, discount, images, categoryId, variants } = req.body
-        const newProduct = { title, price, description, discount, images, categoryId }
+        const { title, price, description, discount, images, categoryId, variants, hide, costPrice, sku, sizes, colors } = req.body
+        const newProduct = { title, price, description, discount, images, categoryId, hide, costPrice, sku, sizes, colors }
         // Lấy thông tin sản phẩm trước khi cập nhật
         const product = await Product.findOne({ _id: req.params.id });
 
@@ -216,7 +216,7 @@ export const update = async (req, res) => {
                 }
             }
         });
-        
+
         // Cập nhật thông tin sản phẩm
         const updatedProduct = await Product.findOneAndUpdate(
             { _id: req.params.id },
