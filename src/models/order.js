@@ -25,19 +25,17 @@ const orderSchema = new mongoose.Schema(
     },
     vourcher_code: {
       type: String,
-      required: true,
     },
     note: {
       type: String,
-      required: true
     },
     status: {
       type: Number,
       default: 1,
     },
     pay_method: {
-      type: Number,
-      required: true,
+      type: String,
+      // required: true,
     },
     orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
     totalMoney: {
@@ -45,7 +43,11 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    voucherDiscounted:{
+    isReviewed: {
+      type: Boolean,
+      default: false
+    },
+    voucherDiscounted: {
       type: Number,
       default: 0
     },

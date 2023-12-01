@@ -116,15 +116,16 @@ export const create = async (req, res) => {
         await Promise.all(userCart.map(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
         }));
-
-        const vourcher = await Voucher.findOne({ code: vourcher_code })
-        console.log(vourcher);
-        const remove = await User.findOneAndUpdate(
-            { _id: userId },
-            { $pull: { voucherwallet: vourcher._id } },
-            { new: true }
-        )
-        console.log(remove);
+        if (vourcher_code) {
+            const vourcher = await Voucher.findOne({ code: vourcher_code })
+            console.log(vourcher);
+            const remove = await User.findOneAndUpdate(
+                { _id: userId },
+                { $pull: { voucherwallet: vourcher._id } },
+                { new: true }
+            )
+            console.log(remove);
+        }
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
