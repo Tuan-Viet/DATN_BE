@@ -23,7 +23,7 @@ export const signupSchema = Joi.object({
   role: Joi.string().default('user').messages({
     "error-input": 'role',
   }),
-  
+
 });
 
 export const signinSchema = Joi.object({
@@ -41,8 +41,9 @@ export const signinSchema = Joi.object({
 });
 
 export const userInfoSchema = Joi.object({
-  phone: Joi.string().required(),
+  // phone: Joi.string().required(),
   fullname: Joi.string().required(),
+  email: Joi.string(),
   birthday: Joi.string(),
   height: Joi.number(),
   weight: Joi.number(),

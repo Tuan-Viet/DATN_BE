@@ -28,7 +28,6 @@ const orderSchema = new mongoose.Schema(
     },
     note: {
       type: String,
-      required: true,
     },
     status: {
       type: Number,
@@ -51,7 +50,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    voucherDiscounted:{
+    voucherDiscounted: {
       type: Number,
       default: 0
     },
