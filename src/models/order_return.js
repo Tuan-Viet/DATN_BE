@@ -31,8 +31,7 @@ const orderReturnSchema = new mongoose.Schema(
             type: Number,
             default: 1,
         },
-        orderId: { type: String },
-        orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
+        orderReturnDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderReturnDetail" }],
         deleted: {
             type: Boolean,
             default: false,
