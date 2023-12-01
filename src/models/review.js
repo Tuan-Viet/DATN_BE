@@ -12,6 +12,12 @@ const reviewSchema = new mongoose.Schema(
       ref: "User", // Tham chiếu đến model người dùng
       required: true,
     },
+    color: {
+      type: String
+    },
+    size: {
+      type: String
+    },
     rating: {
       type: Number,
       required: true,
@@ -22,10 +28,10 @@ const reviewSchema = new mongoose.Schema(
     },
     images: [
       {
-          type: Object,
-          required: true,
+        type: Object,
+        required: true,
       },
-  ],
+    ],
   },
   {
     timestamps: true,
