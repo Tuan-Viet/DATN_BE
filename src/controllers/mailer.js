@@ -66,7 +66,7 @@ export const forgotPasswordMail  = async (userEmail, token) => {
       },
     });
 
-    const confirmationLink = `http://localhost:8080/api/auth/forgotPassword/${token}`;
+    const confirmationLink = `http://localhost:5173/resetPassword?${token}`;
 
     const mailOptions = {
       from: 'hustle.nodemail@gmail.com',

@@ -52,7 +52,7 @@ export const getReviewById = async (req, res) => {
 };
 export const getReviews = async (req, res) => {
     try {
-        const reviews = await Review.find();
+        const reviews = await Review.find().populate('userId');
         if (reviews.length === 0) {
             return res.status(200).json({
                 message: "Không có đánh giá nào.",
@@ -87,6 +87,7 @@ export const updateReview = async (req, res) => {
                 message: "Sửa đánh giá không thành công!",
             });
         }
+        review.userId.password = ''
         return res.status(200).json({
             message: 'Sửa đánh giá thành công',
             data: review,

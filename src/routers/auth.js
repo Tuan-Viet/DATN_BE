@@ -7,14 +7,14 @@ import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPe
 const routerAuth = express.Router();
 
 routerAuth.get('/confirm-registration/:confirmationCode', confirmRegistration);
-routerAuth.get('/reset-password/:token', resetPassword);
+routerAuth.post('/reset-password/:token', resetPassword);
 
 routerAuth.post("/register", signup);
 routerAuth.post("/login", signin);
 routerAuth.post("/user/forgotPassword", forgotPassword);
 
 
-routerAuth.get("/users", checkPermission, getAllUsersAsAdmin);
+routerAuth.get("/users", checkAuthenticatedUser, getAllUsersAsAdmin);
 routerAuth.patch("/user/:id/update", updateUser);
 routerAuth.delete("/users/:id", checkPermission, deleteUserPermanently);
 routerAuth.post("/user/change/password", checkAuthenticatedUser, changePassword);
