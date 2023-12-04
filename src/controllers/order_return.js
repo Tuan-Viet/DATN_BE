@@ -1,8 +1,6 @@
-import Order from '../models/order.js'
-import Cart from '../models/cart.js'
+import OrderReturn from '../models/order_return.js'
 import User from '../models/user.js'
-import Voucher from '../models/voucher.js'
-import OrderDetail from '../models/order_detail.js'
+import OrderReturnDetail from '../models/order_return_detail.js'
 import ProductDetail from '../models/product_detail.js';
 import Product from '../models/product.js';
 
@@ -27,14 +25,14 @@ export const getAll = async (req, res) => {
         },
     };
     try {
-        const { docs: orders } = await Order.paginate(searchQuery, optinos);
+        const { docs: orderReturns } = await OrderReturn.paginate(searchQuery, optinos);
         // const orders = await Order.find()
-        if (!orders) {
+        if (!orderReturns) {
             return res.status(404).json({
                 message: "Order not found",
             });
         }
-        return res.status(200).json(orders);
+        return res.status(200).json(orderReturns);
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -44,8 +42,8 @@ export const getAll = async (req, res) => {
 
 export const get = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate(
-            "orderDetails"
+        const order = await OrderReturn.findById(req.params.id).populate(
+            "orderReturnDetails"
         );
         if (!order) {
             return res.status(404).json({
@@ -64,19 +62,19 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts, orderId } = req.body
-        const newOrder = { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, orderId }
-        const order = await Order.create(newOrder);
-        if (!order) {
+        const { userId, fullName, phoneNumber, address, reason, totalMoney, orderDetailIds } = req.body
+        const newOrder = { userId, fullName, phoneNumber, address, reason, totalMoney }
+        const orderReturn = await OrderReturn.create(newOrder);
+        if (!orderReturn) {
             return res.status(404).json({
                 message: "Order not found",
             });
         }
 
-        const orderDetails = await Promise.all(carts.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
+        const orderReturnDetails = await Promise.all(orderDetailIds.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
             const product = await Product.findOne({ "variants": productDetailId });
             return {
-                orderId: order._id,
+                orderId: orderReturn._id,
                 productDetailId,
                 price,
                 costPrice: product.costPrice,
@@ -87,46 +85,30 @@ export const create = async (req, res) => {
             };
         }));
 
-        await Promise.all(orderDetails.map(async (newOrderDetail) => {
-            const orderDetail = await OrderDetail.create(newOrderDetail);
-            if (!orderDetail) {
+        await Promise.all(orderReturnDetails.map(async (newOrderReturnDetail) => {
+            const orderReturnDetail = await OrderReturnDetail.create(newOrderReturnDetail);
+            if (!orderReturnDetail) {
                 return res.status(404).json({
                     message: "orderDetail not found",
                 });
             }
-            await Order.findByIdAndUpdate(orderDetail.orderId, {
+            await OrderReturn.findByIdAndUpdate(orderReturnDetail.orderReturnId, {
                 $addToSet: {
-                    orderDetails: orderDetail._id,
+                    orderReturnDetails: orderReturnDetail._id,
                 },
             });
-            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId });
+            const productDetail = await ProductDetail.findById({ _id: orderReturnDetail.productDetailId });
             await ProductDetail.findByIdAndUpdate(
-                { _id: orderDetail.productDetailId },
+                { _id: orderReturnDetail.productDetailId },
                 {
-                    sold: orderDetail.quantity,
-                    quantity: productDetail.quantity - orderDetail.quantity
+                    sold: productDetail.sold - orderReturnDetail.quantity,
+                    quantity: productDetail.quantity + orderReturnDetail.quantity
                 },
                 { new: true }
             );
         }));
 
-        const allCart = await Cart.find()
-        const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)
-
-        await Promise.all(userCart.map(async item => {
-            await Cart.findOneAndDelete({ _id: item._id })
-        }));
-        if (vourcher_code) {
-            const vourcher = await Voucher.findOne({ code: vourcher_code })
-            console.log(vourcher);
-            const remove = await User.findOneAndUpdate(
-                { _id: userId },
-                { $pull: { voucherwallet: vourcher._id } },
-                { new: true }
-            )
-            console.log(remove);
-        }
-        return res.status(200).json(order);
+        return res.status(200).json(orderReturn);
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -136,7 +118,7 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const order = await Order.findOneAndUpdate(
+        const order = await OrderReturn.findOneAndUpdate(
             { _id: req.params.id },
             req.body,
             { new: true }

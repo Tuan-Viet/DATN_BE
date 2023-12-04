@@ -1,5 +1,5 @@
 import express from "express";
-import { addAddress, addVourcher, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, forgotPassword, getAllUsersAsAdmin, getUser, resetPassword, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
+import { addAddress, addVourcher, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, forgotPassword, getAllUsersAsAdmin, getInfoUser, getUser, resetPassword, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
 // import passport from "passport";
 import { createReview, deleteReview, getReviewById, getReviews, updateReview } from "../controllers/review.js";
 import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPermission.js';
@@ -16,6 +16,7 @@ routerAuth.post("/user/forgotPassword", forgotPassword);
 
 routerAuth.get("/users", checkAuthenticatedUser, getAllUsersAsAdmin);
 routerAuth.patch("/user/:id/update", updateUser);
+routerAuth.get("/user/:id/", getInfoUser);
 routerAuth.delete("/users/:id", checkPermission, deleteUserPermanently);
 routerAuth.post("/user/change/password", checkAuthenticatedUser, changePassword);
 routerAuth.post("/user-address/add", checkAuthenticatedUser, addAddress);
@@ -30,13 +31,13 @@ routerAuth.get("/reviews", getReviews);
 
 routerAuth.get("/review/:id", getReviewById);
 
-routerAuth.post("/review", checkAuthenticatedUser, createReview);
+routerAuth.post("/review", createReview);
 
 routerAuth.put("/review/:id", checkAuthenticatedUser, updateReview);
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);
 
-routerAuth.put("/add-vourcher", checkAuthenticatedUser, addVourcher);
+routerAuth.put("/add-vourcher", addVourcher);
 
 
 
