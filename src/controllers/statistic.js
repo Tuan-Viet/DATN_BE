@@ -1,6 +1,8 @@
 import moment from "moment/moment";
 import Order from "../models/order";
 import "moment-timezone";
+import User from "../models/user";
+import Review from "../models/review";
 export const productRevenue = async (req, res) => {
   try {
     const productRevenue = await Order.find({
@@ -21,27 +23,32 @@ export const productRevenue = async (req, res) => {
 
     productRevenue.forEach((order) => {
       order.orderDetails.forEach((detail) => {
-        const existingProduct = productRevenueArray.find(
-          (product) =>
-            product.productId.toString() ===
-            detail.productDetailId.product_id._id.toString()
-        );
-
-        if (existingProduct) {
-          existingProduct.quantitySold += detail.quantity;
-          existingProduct.totalOrders += 1;
-          existingProduct.totalRevenue += detail.totalMoney;
-          existingProduct.profit +=
-            (detail.price - detail.costPrice) * detail.quantity;
+        if (detail.productDetailId.product_id) {
+          const existingProduct = productRevenueArray.find(
+            (product) =>
+              product.productId.toString() ===
+              detail.productDetailId.product_id._id.toString()
+          );
+    
+          if (existingProduct) {
+            existingProduct.quantitySold += detail.quantity;
+            existingProduct.totalOrders += 1;
+            existingProduct.totalRevenue += detail.totalMoney;
+            existingProduct.profit +=
+              (detail.price - detail.costPrice) * detail.quantity;
+          } else {
+            productRevenueArray.push({
+              productId: detail.productDetailId.product_id._id,
+              productName: detail.productDetailId.product_id.title,
+              quantitySold: detail.quantity,
+              totalOrders: 1,
+              totalRevenue: detail.totalMoney,
+              profit: (detail.price - detail.costPrice) * detail.quantity,
+            });
+          }
         } else {
-          productRevenueArray.push({
-            productId: detail.productDetailId.product_id._id,
-            productName: detail.productDetailId.product_id.title,
-            quantitySold: detail.quantity,
-            totalOrders: 1,
-            totalRevenue: detail.totalMoney,
-            profit: (detail.price - detail.costPrice) * detail.quantity,
-          });
+          // Xử lý trường hợp sản phẩm đã bị xóa
+          console.log(`Sản phẩm với productId ${detail.productDetailId} đã bị xóa.`);
         }
       });
     });
@@ -335,7 +342,6 @@ export const orderRevenueBy7Days =async (req, res) => {
       const orderDate = moment(order.createdAt).tz('Asia/Ho_Chi_Minh');
       const today = moment().tz('Asia/Ho_Chi_Minh');
       const sevenDaysAgo = today.clone().subtract(7, 'days');
-      console.log(sevenDaysAgo, "hehe" , today);
       // Check if the order is within the last 7 days
       if (orderDate.isBetween(sevenDaysAgo, today, null, '[]')) {
         const day = orderDate.format('YYYY-MM-DD');
@@ -520,5 +526,123 @@ export const orderRevanue = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi server" });
+  }
+};
+export const getStatisticsFor24h = async (req, res) => {
+  try {
+    const date = new Date(new Date() - 24 * 60 * 60 * 1000);
+    const newUsersCount = await User.countDocuments({
+      createdAt: { $gte: date },
+    });
+
+    const newOrdersCount = await Order.countDocuments({
+      createdAt: { $gte: date },
+    });
+
+    const bestSellingProduct = await Order.aggregate([
+      {
+        $match: { createdAt: { $gte: date } },
+      },
+      {
+        $lookup: {
+          from: 'orderdetails', 
+          localField: 'orderDetails',
+          foreignField: '_id',
+          as: 'orderDetail',
+        },
+      },
+      {
+        $unwind: '$orderDetail',
+      },
+      {
+        $group: {
+          _id: '$orderDetail.productDetailId',
+          totalQuantitySold: { $sum: '$orderDetail.quantity' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'productdetails',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productDetail',
+        },
+      },
+      {
+        $unwind: '$productDetail',
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productDetail.product_id',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product',
+      },
+      {
+        $group: {
+          _id: '$product._id',
+          title: { $first: '$product.title' },
+          totalQuantitySold: { $sum: '$totalQuantitySold' },
+        },
+      },
+      {
+        $sort: { totalQuantitySold: -1 },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          totalQuantitySold: 1,
+        },
+      },
+    ]);
+
+    const newOrders = await Order.find({
+      createdAt: { $gte: date },
+    }).populate({
+      path: 'orderDetails',
+      populate: {
+        path: 'productDetailId',
+        model: 'ProductDetail',
+      },
+    });
+
+    const revenue = newOrders.reduce((totalRevenue, order) => {
+      return totalRevenue + order.totalMoney; 
+    }, 0);
+
+    const profit = newOrders.reduce((totalProfit, order) => {
+      return (
+        totalProfit +
+        order.orderDetails.reduce((orderProfit, orderDetail) => {
+          return (
+            orderProfit +
+            (orderDetail.price - orderDetail.costPrice) * orderDetail.quantity
+          );
+        }, 0)
+      );
+    }, 0);
+    const newReviews = await Review.find({
+      createdAt: { $gte: date },
+    }).populate('productId');
+    return res.status(200).json({
+        revenue,
+        profit,
+        newReviews,
+        newUsersCount,
+        newOrdersCount,
+        bestSellingProduct,
+      
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+    });
   }
 };

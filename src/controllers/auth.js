@@ -38,6 +38,7 @@ export const signup = async (req, res) => {
 
     const user = await User.create({
       ...req.body,
+      role: 'user',
       password: hashedPassword,
     });
 
@@ -363,7 +364,6 @@ export const getUser = async (req, res) => {
     }
 
     const userId = req.user._id;
-    console.log(userId);
 
     const user = await User.findById(userId).populate("addresses");
     if (!user) {
@@ -386,7 +386,6 @@ export const confirmRegistration = async (req, res) => {
   try {
     const { confirmationCode } = req.params;
     const decodedToken = jwt.verify(confirmationCode, SECRET_CODE);
-    console.log(decodedToken);
     const userId = decodedToken.id;
     const user = await User.findById(userId);
     if (!user) {
@@ -410,14 +409,25 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.find({ email })
-    console.log(user);
+    const user = await User.find({ email, isActive: true })
     if (!user) {
       return res.status(400).json({
-        message: "Tài khoản không tồn tại"
+        message: "Tài khoản không tồn tại hoặc chưa kích hoạt"
       })
     }
     const token = jwt.sign({ email }, SECRET_CODE, { expiresIn: "1h" });
+    user.forgotPasswordToken = token;
+    
+    const result = await User.updateOne(
+      { email },
+      { $set: { forgotPasswordToken: token } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({
+        message: "Tài khoản không tồn tại",
+      });
+    }
 
     await forgotPasswordMail(email, token)
 
@@ -444,15 +454,26 @@ export const resetPassword = async (req, res) => {
     const decodedToken = jwt.verify(token, SECRET_CODE);
     const { email } = decodedToken;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, forgotPasswordToken: token });
 
     if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại" });
+      return res.status(404).json({ message: "URL đã được sử dụng trước đó" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-    await user.save();
+    user.forgotPasswordToken = null;
+    const result = await User.updateOne(
+      { email },
+      { $set: { forgotPasswordToken: null } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({
+        message: "Tài khoản không tồn tại",
+      });
+    }
+
 
     return res.status(200).json({
       message: "Đặt lại mật khẩu thành công.",

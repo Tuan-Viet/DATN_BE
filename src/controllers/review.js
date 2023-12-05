@@ -85,6 +85,7 @@ export const updateReview = async (req, res) => {
                 message: "Sửa đánh giá không thành công!",
             });
         }
+        review.userId.password = ''
         return res.status(200).json({
             message: 'Sửa đánh giá thành công',
             data: review,
