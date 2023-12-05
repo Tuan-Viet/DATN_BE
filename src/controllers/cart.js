@@ -40,12 +40,6 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        // const { error } = cartSchema.validate(req.body);
-        // if (error) {
-        //     res.json({
-        //         message: error.details[0].message,
-        //     });
-        // }
         const cart = await Cart.findOne({ productDetailId: req.body.productDetailId })
         if (cart) {
             const newQuantity = cart.quantity + req.body.quantity

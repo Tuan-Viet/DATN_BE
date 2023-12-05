@@ -43,10 +43,6 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    isReviewed: {
-      type: Boolean,
-      default: false
-    },
     voucherDiscounted: {
       type: Number,
       default: 0

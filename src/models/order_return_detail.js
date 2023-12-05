@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
-const orderDetailSchema = new mongoose.Schema(
+const orderReturnDetailSchema = new mongoose.Schema(
     {
-        orderId: {
+        orderReturnId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Order",
+            ref: "OrderReturn",
             required: true,
         },
         productDetailId: {
@@ -39,10 +39,6 @@ const orderDetailSchema = new mongoose.Schema(
             type: Number,
             required: true
         },
-        isReviewed: {
-            type: Boolean,
-            default: false
-        },
         deleted: {
             type: Boolean,
             default: false,
@@ -50,6 +46,6 @@ const orderDetailSchema = new mongoose.Schema(
     },
     { timestamps: true, versionKey: false }
 );
-orderDetailSchema.plugin(mongoosePaginate);
+orderReturnDetailSchema.plugin(mongoosePaginate);
 
-export default mongoose.model("OrderDetail", orderDetailSchema);
+export default mongoose.model("OrderReturnDetail", orderReturnDetailSchema);
