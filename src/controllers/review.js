@@ -52,17 +52,15 @@ export const getReviewById = async (req, res) => {
 };
 export const getReviews = async (req, res) => {
     try {
-        const reviews = await Review.find();
+        const reviews = await Review.find().populate('userId');
         if (reviews.length === 0) {
-            return res.status(200).json({
-                message: "Không có đánh giá nào.",
-                data: [],
-            });
+            return res.status(200).json(
+                []
+            );
         }
-        return res.status(200).json({
-            message: 'Lấy danh sách đánh giá thành công',
-            data: reviews,
-        });
+        return res.status(200).json(
+            reviews
+        );
     } catch (error) {
         return res.status(500).json({
             message: 'Lỗi server',
@@ -87,6 +85,7 @@ export const updateReview = async (req, res) => {
                 message: "Sửa đánh giá không thành công!",
             });
         }
+        review.userId.password = ''
         return res.status(200).json({
             message: 'Sửa đánh giá thành công',
             data: review,

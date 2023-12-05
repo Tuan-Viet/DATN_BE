@@ -3,8 +3,28 @@ import Product from "../models/product.js";
 import { categorySchema } from "../validations/category.js";
 
 export const getCategories = async (req, res) => {
+  const {
+    _page = 1,
+    _limit = 100,
+    _sort = "createdAt",
+    _order = "desc",
+    _search
+  } = req.query;
+
+  const searchQuery = {};
+  if (_search) {
+    searchQuery.name = { $regex: _search, $options: "i" };
+  }
+  const optinos = {
+    page: _page,
+    limit: _limit,
+    sort: {
+      [_sort]: _order === "desc" ? "-1" : "1",
+    },
+  };
   try {
-    const categories = await Category.find();
+    // const categories = await Category.find();
+    const { docs: categories } = await Category.paginate(searchQuery, optinos);
     if (categories.length === 0) {
       return res.status(400).json({
         message: "khong tim thay san pham !",

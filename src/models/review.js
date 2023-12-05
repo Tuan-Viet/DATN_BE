@@ -4,13 +4,19 @@ const reviewSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", // Tham chiếu đến model sản phẩm
+      ref: "Product", 
       required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Tham chiếu đến model người dùng
+      ref: "User", 
       required: true,
+    },
+    color: {
+      type: String
+    },
+    size: {
+      type: String
     },
     rating: {
       type: Number,
@@ -22,10 +28,10 @@ const reviewSchema = new mongoose.Schema(
     },
     images: [
       {
-          type: Object,
-          required: true,
+        type: Object,
+        required: true,
       },
-  ],
+    ],
   },
   {
     timestamps: true,

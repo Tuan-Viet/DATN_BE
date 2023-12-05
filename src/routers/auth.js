@@ -6,15 +6,15 @@ import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPe
 
 const routerAuth = express.Router();
 
-routerAuth.get('/confirm-registration/:confirmationCode', confirmRegistration);
-routerAuth.get('/reset-password/:token', resetPassword);
+routerAuth.post('/confirm-registration/:confirmationCode', confirmRegistration);
+routerAuth.post('/reset-password/:token', resetPassword);
 
 routerAuth.post("/register", signup);
 routerAuth.post("/login", signin);
 routerAuth.post("/user/forgotPassword", forgotPassword);
 
 
-routerAuth.get("/users", checkPermission, getAllUsersAsAdmin);
+routerAuth.get("/users", checkAuthenticatedUser, getAllUsersAsAdmin);
 routerAuth.patch("/user/:id/update", updateUser);
 routerAuth.get("/user/:id/", getInfoUser);
 routerAuth.delete("/users/:id", checkPermission, deleteUserPermanently);
@@ -31,7 +31,7 @@ routerAuth.get("/reviews", getReviews);
 
 routerAuth.get("/review/:id", getReviewById);
 
-routerAuth.post("/review", checkAuthenticatedUser, createReview);
+routerAuth.post("/review", createReview);
 
 routerAuth.put("/review/:id", checkAuthenticatedUser, updateReview);
 
