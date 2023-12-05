@@ -7,8 +7,6 @@ export const productSchema = joi.object({
     costPrice: joi.number().required().min(0),
     description: joi.string(),
     images: joi.array().required(),
-    colors: joi.array().required(),
-    sizes: joi.array().required(),
     variants: joi.array(),
     categoryId: joi.string().required(),
     hide: joi.boolean(),
