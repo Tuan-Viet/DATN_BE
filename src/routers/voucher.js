@@ -11,6 +11,4 @@ routerVoucher.patch(`/:id/edit`, update)
 routerVoucher.delete(`/delete-categories`, deleteVouchers)
 routerVoucher.delete(`/:id`, remove)
 
-
-
 export default routerVoucher;

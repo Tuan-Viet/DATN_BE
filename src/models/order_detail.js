@@ -13,7 +13,7 @@ const orderDetailSchema = new mongoose.Schema(
             ref: "ProductDetail",
             required: true,
         },
-        costPrice:{
+        costPrice: {
             type: Number,
             min: 0,
         },
@@ -38,6 +38,10 @@ const orderDetailSchema = new mongoose.Schema(
         totalMoney: {
             type: Number,
             required: true
+        },
+        isReviewed: {
+            type: Boolean,
+            default: false
         },
         deleted: {
             type: Boolean,

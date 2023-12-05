@@ -15,7 +15,7 @@ export const getAll = async (req, res) => {
 
     const searchQuery = {};
     if (_search) {
-        searchQuery.name = { $regex: _search, $options: "i" };
+        searchQuery.title = { $regex: _search, $options: "i" };
     }
     const optinos = {
         page: _page,
@@ -51,7 +51,7 @@ export const get = async (req, res) => {
                 message: "Product not found",
             });
         }
-         product.costPrice = null;
+        product.costPrice = null;
         return res.status(200).json(
             product
         );
@@ -87,18 +87,9 @@ export const getOne = async (req, res) => {
 };
 export const create = async (req, res) => {
     try {
-        // const { error } = productSchema.validate(req.body);
-        // if (error) {
-        //     res.json({
-        //         message: error.details[0].message,
-        //     });
-        // }
-        const { title, price, description, discount, images, categoryId, variants, hide, costPrice, sku, sizes, colors } = req.body
-        const newProduct = { title, price, description, discount, images, categoryId, hide, costPrice, sku, sizes, colors }
-        // console.log(newProduct);
 
-        // console.log(variants);
-        // console.log(resultArray);
+        const { title, price, description, discount, images, categoryId, variants, hide, costPrice, sku } = req.body
+        const newProduct = { title, price, description, discount, images, categoryId, hide, costPrice, sku }
         const product = await Product.create(newProduct);
         if (!product) {
             return res.status(404).json({
@@ -156,8 +147,8 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { title, price, description, discount, images, categoryId, variants, hide, costPrice, sku, sizes, colors } = req.body
-        const newProduct = { title, price, description, discount, images, categoryId, hide, costPrice, sku, sizes, colors }
+        const { title, price, description, discount, images, categoryId, variants, hide, costPrice, sku } = req.body
+        const newProduct = { title, price, description, discount, images, categoryId, hide, costPrice, sku }
         // Lấy thông tin sản phẩm trước khi cập nhật
         const product = await Product.findOne({ _id: req.params.id });
 
@@ -275,9 +266,9 @@ export const getAllByAdmin = async (req, res) => {
 };
 export const getByAdmin = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id)           .populate({
+        const product = await Product.findById(req.params.id).populate({
             path: "variants",
-            options: { sort: { createdAt: 1 } } 
+            options: { sort: { createdAt: 1 } }
         }).populate('categoryId');
         if (!product) {
             return res.status(404).json({
