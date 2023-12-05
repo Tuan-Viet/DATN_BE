@@ -24,6 +24,7 @@ export const getAll = async (req, res) => {
             [_sort]: _order === "desc" ? "-1" : "1",
         },
         populate: "categoryId",
+        select: '-costPrice'
     };
     try {
         const { docs: products } = await Product.paginate(searchQuery, optinos);
@@ -50,6 +51,7 @@ export const get = async (req, res) => {
                 message: "Product not found",
             });
         }
+         product.costPrice = null;
         return res.status(200).json(
             product
         );
@@ -73,8 +75,8 @@ export const getOne = async (req, res) => {
                 message: "Product not found",
             });
         }
+        product.costPrice = null;
         return res.status(200).json(
-
             product
         );
     } catch (error) {
@@ -227,6 +229,87 @@ export const update = async (req, res) => {
             { new: true }
         );
         return res.status(200).json(updatedProduct);
+    } catch (error) {
+        return res.status(500).json({
+            message: error,
+        });
+    }
+};
+
+//admin
+export const getAllByAdmin = async (req, res) => {
+    // req.query._sort => price
+    const {
+        _page = 1,
+        _limit = 100,
+        _sort = "createdAt",
+        _order = "desc",
+        _search
+    } = req.query;
+
+    const searchQuery = {};
+    if (_search) {
+        searchQuery.name = { $regex: _search, $options: "i" };
+    }
+    const optinos = {
+        page: _page,
+        limit: _limit,
+        sort: {
+            [_sort]: _order === "desc" ? "-1" : "1",
+        },
+        populate: "categoryId",
+    };
+    try {
+        const { docs: products } = await Product.paginate(searchQuery, optinos);
+        if (!products) {
+            return res.status(404).json({
+                message: "Product not found",
+            });
+        }
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json({
+            message: error,
+        });
+    }
+};
+export const getByAdmin = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id)           .populate({
+            path: "variants",
+            options: { sort: { createdAt: 1 } } 
+        }).populate('categoryId');
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found",
+            });
+        }
+        return res.status(200).json(
+            product
+        );
+    } catch (error) {
+        return res.status(500).json({
+            message: error,
+        });
+    }
+};
+
+// tìm sản phẩm theo tên
+export const getOneByAdmin = async (req, res) => {
+    try {
+        const product = await Product.findOne({ name: req.params.name }).populate(
+            "categoryId",
+            "products"
+        );
+        console.log(1);
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found",
+            });
+        }
+        return res.status(200).json(
+            product
+        );
     } catch (error) {
         return res.status(500).json({
             message: error,
