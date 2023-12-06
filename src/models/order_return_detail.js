@@ -35,10 +35,10 @@ const orderReturnDetailSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        totalMoney: {
-            type: Number,
-            required: true
-        },
+        // totalMoney: {
+        //     type: Number,
+        //     required: true
+        // },
         deleted: {
             type: Boolean,
             default: false,
