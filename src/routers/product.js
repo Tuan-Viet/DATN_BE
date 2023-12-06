@@ -11,7 +11,7 @@ router.get('/:id', get)
 router.post('/add', checkPermission, create)
 router.delete('/:id', checkPermission, remove)
 router.patch('/:id', checkPermission, update)
-router.get('/admin/:id', checkPermission, getByAdmin)
+router.get('/admin/:id', getByAdmin)
 
 
 export default router
