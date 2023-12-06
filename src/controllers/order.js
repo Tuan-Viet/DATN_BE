@@ -46,7 +46,7 @@ export const get = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id).populate(
             "orderDetails"
-        );
+        ).populate("userId")
         if (!order) {
             return res.status(404).json({
                 message: "Order not found",
