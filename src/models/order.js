@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    vourcher_code: {
+    voucher_code: {
       type: String,
     },
     note: {
@@ -35,6 +35,7 @@ const orderSchema = new mongoose.Schema(
       // required: true,
     },
     orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
+    orderReturn: { type: mongoose.Types.ObjectId, ref: "OrderReturn" },
     totalMoney: {
       type: Number,
       required: true,

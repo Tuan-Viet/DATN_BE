@@ -1,5 +1,5 @@
 import OrderReturn from '../models/order_return.js'
-import User from '../models/user.js'
+import Order from '../models/order.js'
 import OrderReturnDetail from '../models/order_return_detail.js'
 import ProductDetail from '../models/product_detail.js';
 import Product from '../models/product.js';
@@ -62,14 +62,19 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { userId, fullName, phoneNumber, address, reason, orderDetailIds } = req.body
-        const newOrder = { userId, fullName, phoneNumber, address, reason }
+        const { orderId, userId, fullName, phoneNumber, address, reason, orderDetailIds } = req.body
+        const newOrder = { orderId, userId, fullName, phoneNumber, address, reason }
         const orderReturn = await OrderReturn.create(newOrder);
         if (!orderReturn) {
             return res.status(404).json({
                 message: "Order not found",
             });
         }
+        await Order.findByIdAndUpdate(orderReturn.orderId, {
+            $addToSet: {
+                orderReturn: orderReturn._id,
+            },
+        });
 
         const orderReturnDetails = await Promise.all(orderDetailIds.map(async ({ productDetailId, price, quantity, color, size }) => {
             const product = await Product.findOne({ "variants": productDetailId });
