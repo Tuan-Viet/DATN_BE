@@ -4,11 +4,11 @@ import { voucherValidationSchema } from "../validations/voucher.js";
 export const getVouchers = async (req, res) => {
     try {
         const vouchers = await Voucher.find();
-        if (vouchers.length === 0) {
-            return res.status(400).json({
-                message: "Không tìm thấy voucher!",
-            });
-        }
+        // if (vouchers.length === 0) {
+        //     return res.status(400).json({
+        //         message: "Không tìm thấy voucher!",
+        //     });
+        // }
 
         return res.status(200).json(vouchers);
     } catch (err) {

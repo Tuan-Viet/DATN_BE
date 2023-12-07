@@ -32,6 +32,7 @@ const voucherSchema = new mongoose.Schema({
     },
     maxOrderValue: {
         type: Number,
+        default: 0,
     },
     validFrom: {
         type: Date,

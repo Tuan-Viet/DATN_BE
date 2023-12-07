@@ -11,7 +11,7 @@ export const voucherValidationSchema = Joi.object({
     discount: Joi.number().min(0).required(),
     used: Joi.number().integer().min(0),
     minOrderValue: Joi.number().default(0),
-    maxOrderValue: Joi.number(),
+    maxOrderValue: Joi.number().default(0),
     validFrom: Joi.date().iso().required(),
     validTo: Joi.date().iso().greater(Joi.ref('validFrom')).allow(null),
     description: Joi.string(),
