@@ -20,6 +20,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    paymentStatus:{
+      type: Number,
+      default: 0
+    },
     vourcher_code: {
       type: String,
     },
