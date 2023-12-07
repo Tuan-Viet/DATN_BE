@@ -30,6 +30,9 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    paymentStatus: {
+      type: Number,
+    },
     pay_method: {
       type: String,
       // required: true,
