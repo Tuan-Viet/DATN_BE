@@ -39,13 +39,31 @@ export const getAll = async (req, res) => {
 
 export const get = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id)
+        const order = await OrderDetail.findById(req.params.id)
         if (!order) {
             return res.status(404).json({
                 message: "Order not found",
             });
         }
         return res.status(200).json(order);
+    } catch (error) {
+        return res.status(500).json({
+            message: error,
+        });
+    }
+};
+export const update = async (req, res) => {
+    try {
+        const order = await OrderDetail.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true })
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found",
+            });
+        }
+        return res.status(200).json({
+            message: "update thanh cong",
+            order
+        });
     } catch (error) {
         return res.status(500).json({
             message: error,
