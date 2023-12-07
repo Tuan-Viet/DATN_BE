@@ -5,7 +5,6 @@ import Voucher from '../models/voucher.js'
 import OrderDetail from '../models/order_detail.js'
 import ProductDetail from '../models/product_detail.js';
 import Product from '../models/product.js';
-
 export const getAll = async (req, res) => {
     const {
         _page = 1,

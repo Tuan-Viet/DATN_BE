@@ -7,10 +7,12 @@ const orderReturnSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        image: {
-            type: String,
-            required: true
-        },
+        images: [
+            {
+              type: Object,
+              required: true,
+            },
+          ],
         phone: {
             type: String,
             required: true,
