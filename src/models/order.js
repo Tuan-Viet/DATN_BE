@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    vourcher_code: {
+    voucher_code: {
       type: String,
     },
     note: {
