@@ -90,12 +90,12 @@ export const remove = async (req, res) => {
     let undefinedCategory = await Category.findOne({ name: "Chưa phân loại" });
 
     if (!undefinedCategory) {
-      undefinedCategory = await Category.create({ name: "Chưa phân loại" });
+      undefinedCategory = await Category.create({ name: "Chưa phân loại", images: {} });
     }
+    console.log(undefinedCategory)
 
-    //  Tìm và chuyển các sản phẩm liên quan sang danh mục "Uncategorized"
     const productsToUpdate = await Product.find({ categoryId: categoryId });
-    console.log(productsToUpdate);
+    console.log(1);
     await Category.findByIdAndUpdate(undefinedCategory._id, {
       $push: {
         products: {
