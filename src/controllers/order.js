@@ -46,7 +46,8 @@ export const get = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id).populate(
             "orderDetails"
-        ).populate("userId")
+
+        ).populate("userId").populate("orderReturn")
         if (!order) {
             return res.status(404).json({
                 message: "Order not found",
@@ -116,12 +117,12 @@ export const create = async (req, res) => {
         await Promise.all(userCart.map(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
         }));
-        if (vourcher_code) {
-            const vourcher = await Voucher.findOne({ code: vourcher_code })
-            console.log(vourcher);
+        if (voucher_code) {
+            const voucher = await Voucher.findOne({ code: voucher_code })
+            console.log(voucher);
             const remove = await User.findOneAndUpdate(
                 { _id: userId },
-                { $pull: { voucherwallet: vourcher._id } },
+                { $pull: { voucherwallet: voucher._id } },
                 { new: true }
             )
             console.log(remove);
