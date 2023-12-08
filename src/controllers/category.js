@@ -21,6 +21,7 @@ export const getCategories = async (req, res) => {
     sort: {
       [_sort]: _order === "desc" ? "-1" : "1",
     },
+    populate: "products"
   };
   try {
     // const categories = await Category.find();

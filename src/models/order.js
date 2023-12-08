@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    vourcher_code: {
+    voucher_code: {
       type: String,
     },
     note: {
@@ -34,11 +34,15 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    paymentStatus: {
+      type: Number,
+    },
     pay_method: {
       type: String,
       // required: true,
     },
     orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
+    orderReturn: { type: mongoose.Types.ObjectId, ref: "OrderReturn" },
     totalMoney: {
       type: Number,
       required: true,

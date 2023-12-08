@@ -586,6 +586,7 @@ export const getStatisticsFor24h = async (req, res) => {
         $group: {
           _id: '$product._id',
           title: { $first: '$product.title' },
+          images: { $first: '$product.images'},
           totalQuantitySold: { $sum: '$totalQuantitySold' },
         },
       },
@@ -596,9 +597,13 @@ export const getStatisticsFor24h = async (req, res) => {
         $project: {
           _id: 1,
           title: 1,
+          images: 1,
           totalQuantitySold: 1,
         },
       },
+      {
+        $limit: 5,
+      }
     ]);
 
     const newOrders = await Order.find({
@@ -639,7 +644,6 @@ export const getStatisticsFor24h = async (req, res) => {
       
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       success: false,
       message: 'Internal Server Error',
