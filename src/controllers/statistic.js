@@ -1,8 +1,8 @@
-import moment from "moment/moment";
-import Order from "../models/order";
+import moment from "moment/moment.js";
+import Order from "../models/order.js";
 import "moment-timezone";
-import User from "../models/user";
-import Review from "../models/review";
+import User from "../models/user.js";
+import Review from "../models/review.js";
 export const productRevenue = async (req, res) => {
   try {
     const productRevenue = await Order.find({

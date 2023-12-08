@@ -23,6 +23,7 @@ export const getAll = async (req, res) => {
         sort: {
             [_sort]: _order === "desc" ? "-1" : "1",
         },
+        populate: 'orderReturnDetails',
     };
     try {
         const { docs: orderReturns } = await OrderReturn.paginate(searchQuery, optinos);
@@ -62,8 +63,8 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { orderId, userId, fullName, phoneNumber, address, reason, orderDetailIds } = req.body
-        const newOrder = { orderId, userId, fullName, phoneNumber, address, reason }
+        const { orderId, userId, fullName, phoneNumber, images, address, reason, orderDetailIds } = req.body
+        const newOrder = { orderId, userId, fullName, images, phoneNumber, address, reason }
         const orderReturn = await OrderReturn.create(newOrder);
         if (!orderReturn) {
             return res.status(404).json({
@@ -76,11 +77,12 @@ export const create = async (req, res) => {
             },
         });
 
-        const orderReturnDetails = await Promise.all(orderDetailIds.map(async ({ productDetailId, price, quantity, color, size }) => {
+        const orderReturnDetails = await Promise.all(orderDetailIds.map(async ({ productDetailId, orderDetailId, price, quantity, color, size }) => {
             const product = await Product.findOne({ "variants": productDetailId });
             return {
                 orderReturnId: orderReturn._id,
                 productDetailId,
+                orderDetailId,
                 price,
                 costPrice: product.costPrice,
                 quantity,

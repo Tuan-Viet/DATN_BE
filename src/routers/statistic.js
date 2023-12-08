@@ -1,5 +1,5 @@
 import express from "express";
-import {getStatisticsFor24h, orderRevanue, orderRevanueByDate, orderRevanueByMonth, orderRevanueByWeek, orderRevenueBy7Days, orderRevenueByQuarter, productRevenue} from "../controllers/statistic"
+import {getStatisticsFor24h, orderRevanue, orderRevanueByDate, orderRevanueByMonth, orderRevanueByWeek, orderRevenueBy7Days, orderRevenueByQuarter, productRevenue} from "../controllers/statistic.js"
 const routerStatistic = express.Router()
 
 routerStatistic.get('/product', productRevenue )
