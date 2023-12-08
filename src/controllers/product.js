@@ -1,3 +1,4 @@
+import { log } from "console";
 import Category from "../models/category.js";
 import Product from "../models/product.js";
 import ProductDetail from "../models/product_detail.js";
@@ -122,7 +123,9 @@ export const create = async (req, res) => {
                 },
             });
         });
-        return res.status(200).json(product
+        console.log(product);
+        return res.status(200).json(
+            product
         );
     } catch (error) {
         return res.status(500).json({

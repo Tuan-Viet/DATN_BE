@@ -4,7 +4,7 @@ import { cartSchema } from "../validations/cart.js";
 export const getAll = async (req, res) => {
     try {
         // const { docs: carts } = await Cart.paginate(optinos);
-        const carts = await Cart.find()
+        const carts = await Cart.find().populate("productDetailId")
         if (!carts) {
             return res.status(404).json({
                 message: "Cart not found",
