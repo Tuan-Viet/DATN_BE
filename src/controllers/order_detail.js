@@ -70,3 +70,23 @@ export const update = async (req, res) => {
         });
     }
 };
+
+export const remove = async (req, res) => {
+    try {
+        const orderDetail = await OrderDetail.findByIdAndRemove(req.params.id);
+        if (!orderDetail) {
+            return res.status(400).json({
+                message: "Xóa orderDetail không thành công!",
+            });
+        }
+        return res.status(200).json({
+            message: 'Xóa orderDetail thành công',
+            data: voucher,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Lỗi server',
+            error,
+        });
+    }
+};
