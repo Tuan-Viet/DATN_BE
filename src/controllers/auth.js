@@ -465,7 +465,7 @@ export const resetPassword = async (req, res) => {
     user.forgotPasswordToken = null;
     const result = await User.updateOne(
       { email },
-      { $set: { forgotPasswordToken: null, password:  } }
+      { $set: { forgotPasswordToken: null, password:  hashedPassword} }
     );
 
     if (result.modifiedCount === 0) {
