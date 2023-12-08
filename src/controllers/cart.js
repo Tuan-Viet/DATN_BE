@@ -1,9 +1,10 @@
 import Cart from "../models/cart.js";
+import ProductDetail from "../models/product_detail.js"
 import { cartSchema } from "../validations/cart.js";
 export const getAll = async (req, res) => {
     try {
         // const { docs: carts } = await Cart.paginate(optinos);
-        const carts = await Cart.find()
+        const carts = await Cart.find().populate("productDetailId")
         if (!carts) {
             return res.status(404).json({
                 message: "Cart not found",
@@ -40,18 +41,23 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        // const { error } = cartSchema.validate(req.body);
-        // if (error) {
-        //     res.json({
-        //         message: error.details[0].message,
-        //     });
-        // }
-        const cart = await Cart.findOne({ productDetailId: req.body.productDetailId })
+        const cart = await Cart.findOne({ productDetailId: req.body.productDetailId, userId: req.body.userId })
+        const productDetail = await ProductDetail.findById(req.body.productDetailId).populate("product_id");
+        if (!productDetail) {
+            return res.status(400).json({
+                message: "khon tim thay san pham"
+            })
+        }
         if (cart) {
-            const newQuantity = cart.quantity + req.body.quantity
-            const newTotalMoney = cart.totalMoney + req.body.totalMoney
-            const newCart = await Cart.findOneAndUpdate(
-                { productDetailId: req.body.productDetailId },
+            let newQuantity = cart.quantity + req.body.quantity
+            let newTotalMoney = cart.totalMoney + req.body.totalMoney
+            if (newQuantity > productDetail.quantity) {
+                newQuantity = productDetail.quantity;
+                newTotalMoney = newQuantity * (productDetail.product_id.price - productDetail.product_id.discount)
+            }
+            const newCart = await Cart.findOneAndUpdate({
+                userId: req.body.userId, productDetailId: req.body.productDetailId
+            },
                 { quantity: newQuantity, totalMoney: newTotalMoney },
                 { new: true }
             );
@@ -97,12 +103,6 @@ export const remove = async (req, res) => {
 };
 export const update = async (req, res) => {
     try {
-        const { error } = cartSchema.validate(req.body);
-        if (error) {
-            res.json({
-                message: error.details[0].message,
-            });
-        }
         const cart = await Cart.findOneAndUpdate(
             { _id: req.params.id },
             req.body,

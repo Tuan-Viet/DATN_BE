@@ -45,7 +45,8 @@ export const get = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id).populate(
             "orderDetails"
-        );
+
+        ).populate("userId").populate("orderReturn")
         if (!order) {
             return res.status(404).json({
                 message: "Order not found",
@@ -63,8 +64,8 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts, orderId } = req.body
-        const newOrder = { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, orderId }
+        const { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, carts, orderId, paymentStatus } = req.body
+        const newOrder = { userId, fullName, email, phoneNumber, address, vourcher_code, note, pay_method, totalMoney, orderId, paymentStatus }
         const order = await Order.create(newOrder);
         if (!order) {
             return res.status(404).json({
@@ -115,12 +116,12 @@ export const create = async (req, res) => {
         await Promise.all(userCart.map(async item => {
             await Cart.findOneAndDelete({ _id: item._id })
         }));
-        if (vourcher_code) {
-            const vourcher = await Voucher.findOne({ code: vourcher_code })
-            console.log(vourcher);
+        if (voucher_code) {
+            const voucher = await Voucher.findOne({ code: voucher_code })
+            console.log(voucher);
             const remove = await User.findOneAndUpdate(
                 { _id: userId },
-                { $pull: { voucherwallet: vourcher._id } },
+                { $pull: { voucherwallet: voucher._id } },
                 { new: true }
             )
             console.log(remove);

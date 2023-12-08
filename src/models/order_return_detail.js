@@ -17,6 +17,10 @@ const orderReturnDetailSchema = new mongoose.Schema(
             type: Number,
             min: 0,
         },
+        orderDetailId: {
+            type: String,
+            required: true
+        },
         price: {
             type: Number,
             min: 0,
@@ -35,10 +39,10 @@ const orderReturnDetailSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        totalMoney: {
-            type: Number,
-            required: true
-        },
+        // totalMoney: {
+        //     type: Number,
+        //     required: true
+        // },
         deleted: {
             type: Boolean,
             default: false,

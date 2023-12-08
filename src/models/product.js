@@ -38,18 +38,6 @@ const productSchema = new mongoose.Schema(
             ref: "Category",
             required: true,
         },
-        sizes: [
-            {
-                type: Object,
-                required: true,
-            },
-        ],
-        colors: [
-            {
-                type: Object,
-                required: true,
-            },
-        ],
 
         variants: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
         createdAt: {

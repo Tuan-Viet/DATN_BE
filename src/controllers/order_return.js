@@ -1,5 +1,5 @@
 import OrderReturn from '../models/order_return.js'
-import User from '../models/user.js'
+import Order from '../models/order.js'
 import OrderReturnDetail from '../models/order_return_detail.js'
 import ProductDetail from '../models/product_detail.js';
 import Product from '../models/product.js';
@@ -63,50 +63,58 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { userId, fullName, phoneNumber, address, reason, totalMoney, orderDetailIds } = req.body
-        const newOrder = { userId, fullName, phoneNumber, address, reason, totalMoney }
+        const { orderId, userId, fullName, phoneNumber, images, address, reason, orderDetailIds } = req.body
+        const newOrder = { orderId, userId, fullName, images, phoneNumber, address, reason }
         const orderReturn = await OrderReturn.create(newOrder);
         if (!orderReturn) {
             return res.status(404).json({
                 message: "Order not found",
             });
         }
+        await Order.findByIdAndUpdate(orderReturn.orderId, {
+            $addToSet: {
+                orderReturn: orderReturn._id,
+            },
+        });
 
-        const orderReturnDetails = await Promise.all(orderDetailIds.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
+        const orderReturnDetails = await Promise.all(orderDetailIds.map(async ({ productDetailId, orderDetailId, price, quantity, color, size }) => {
             const product = await Product.findOne({ "variants": productDetailId });
             return {
-                orderId: orderReturn._id,
+                orderReturnId: orderReturn._id,
                 productDetailId,
+                orderDetailId,
                 price,
                 costPrice: product.costPrice,
                 quantity,
                 color,
                 size,
-                totalMoney
             };
         }));
 
         await Promise.all(orderReturnDetails.map(async (newOrderReturnDetail) => {
-            const orderReturnDetail = await OrderReturnDetail.create(newOrderReturnDetail);
-            if (!orderReturnDetail) {
-                return res.status(404).json({
-                    message: "orderDetail not found",
+            if (newOrderReturnDetail.quantity > 0) {
+
+                const orderReturnDetail = await OrderReturnDetail.create(newOrderReturnDetail);
+                if (!orderReturnDetail) {
+                    return res.status(404).json({
+                        message: "orderDetail not found",
+                    });
+                }
+                await OrderReturn.findByIdAndUpdate(orderReturnDetail.orderReturnId, {
+                    $addToSet: {
+                        orderReturnDetails: orderReturnDetail._id,
+                    },
                 });
+                const productDetail = await ProductDetail.findById({ _id: orderReturnDetail.productDetailId });
+                await ProductDetail.findByIdAndUpdate(
+                    { _id: orderReturnDetail.productDetailId },
+                    {
+                        sold: productDetail.sold - orderReturnDetail.quantity,
+                        quantity: productDetail.quantity + orderReturnDetail.quantity
+                    },
+                    { new: true }
+                );
             }
-            await OrderReturn.findByIdAndUpdate(orderReturnDetail.orderReturnId, {
-                $addToSet: {
-                    orderReturnDetails: orderReturnDetail._id,
-                },
-            });
-            const productDetail = await ProductDetail.findById({ _id: orderReturnDetail.productDetailId });
-            await ProductDetail.findByIdAndUpdate(
-                { _id: orderReturnDetail.productDetailId },
-                {
-                    sold: productDetail.sold - orderReturnDetail.quantity,
-                    quantity: productDetail.quantity + orderReturnDetail.quantity
-                },
-                { new: true }
-            );
         }));
 
         return res.status(200).json(orderReturn);

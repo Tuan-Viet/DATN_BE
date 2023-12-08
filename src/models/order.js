@@ -3,10 +3,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const orderSchema = new mongoose.Schema(
   {
-    userId: {
-      type: String,
-      required: true,
-    },
+    userId: { type: mongoose.Types.ObjectId, ref: "User" },
     fullName: {
       type: String,
       required: true,
@@ -23,7 +20,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    vourcher_code: {
+    voucher_code: {
       type: String,
     },
     note: {
@@ -33,18 +30,15 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    paymentStatus: {
+      type: Number,
+    },
     pay_method: {
       type: String,
       // required: true,
     },
-    orderId: {
-      type: String,
-    },
-    paymentStatus: {
-      type: Number,
-      default: 0,
-    },
     orderDetails: [{ type: mongoose.Types.ObjectId, ref: "OrderDetail" }],
+    orderReturn: { type: mongoose.Types.ObjectId, ref: "OrderReturn" },
     totalMoney: {
       type: Number,
       required: true,

@@ -6,7 +6,7 @@ import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPe
 
 const routerAuth = express.Router();
 
-routerAuth.get('/confirm-registration/:confirmationCode', confirmRegistration);
+routerAuth.post('/confirm-registration/:confirmationCode', confirmRegistration);
 routerAuth.post('/reset-password/:token', resetPassword);
 
 routerAuth.post("/register", signup);
