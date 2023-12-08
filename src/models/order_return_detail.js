@@ -17,6 +17,10 @@ const orderReturnDetailSchema = new mongoose.Schema(
             type: Number,
             min: 0,
         },
+        orderDetailId: {
+            type: String,
+            required: true
+        },
         price: {
             type: Number,
             min: 0,
