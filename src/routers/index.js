@@ -15,6 +15,7 @@ import routerPay from "./payment.js"
 import routerMailer from "./mailer.js"
 import routerStatistic from "./statistic.js"
 import routerCron from "./cron.js"
+import routerOutfit from './outfit';
 
 const router = express.Router()
 
@@ -34,6 +35,8 @@ router.use("/paymentMethod", routerPay)
 router.use("/mail", routerMailer)
 router.use("/statistics", routerStatistic)
 router.use("/cron", routerCron)
+router.use("/outfit", routerOutfit)
+
 
 
 

@@ -410,7 +410,7 @@ export const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     const user = await User.find({ email, isActive: true })
-    if (!user) {
+    if (!user || !user.isActive) {
       return res.status(400).json({
         message: "Tài khoản không tồn tại hoặc chưa kích hoạt"
       })

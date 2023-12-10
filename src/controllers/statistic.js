@@ -60,7 +60,7 @@ export const productRevenue = async (req, res) => {
 };
 export const orderRevenue = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -107,7 +107,7 @@ export const orderRevenue = async (req, res) => {
 
 export const orderRevanueByDate = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -181,7 +181,7 @@ export const orderRevanueByDate = async (req, res) => {
 };
 export const orderRevanueByMonth = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -252,7 +252,7 @@ export const orderRevanueByMonth = async (req, res) => {
 };
 export const orderRevanueByWeek = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -322,7 +322,7 @@ export const orderRevanueByWeek = async (req, res) => {
 };
 export const orderRevenueBy7Days =async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -398,7 +398,7 @@ export const orderRevenueBy7Days =async (req, res) => {
 };
 export const orderRevenueByQuarter = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -483,7 +483,7 @@ function getQuarter(month) {
 }
 export const orderRevanue = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate({
+    const orders = await Order.find({status: 5}).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -537,11 +537,12 @@ export const getStatisticsFor24h = async (req, res) => {
 
     const newOrdersCount = await Order.countDocuments({
       createdAt: { $gte: date },
+      isActive: true
     });
 
     const bestSellingProduct = await Order.aggregate([
       {
-        $match: { createdAt: { $gte: date } },
+        $match: { createdAt: { $gte: date }, status: 5 },
       },
       {
         $lookup: {
