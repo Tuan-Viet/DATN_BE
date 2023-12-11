@@ -29,7 +29,7 @@ export const productRevenue = async (req, res) => {
               product.productId.toString() ===
               detail.productDetailId.product_id._id.toString()
           );
-    
+
           if (existingProduct) {
             existingProduct.quantitySold += detail.quantity;
             existingProduct.totalOrders += 1;
@@ -60,7 +60,7 @@ export const productRevenue = async (req, res) => {
 };
 export const orderRevenue = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -107,7 +107,7 @@ export const orderRevenue = async (req, res) => {
 
 export const orderRevanueByDate = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -181,7 +181,7 @@ export const orderRevanueByDate = async (req, res) => {
 };
 export const orderRevanueByMonth = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -252,7 +252,7 @@ export const orderRevanueByMonth = async (req, res) => {
 };
 export const orderRevanueByWeek = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -320,9 +320,9 @@ export const orderRevanueByWeek = async (req, res) => {
     return res.status(500).json({ message: "Lỗi server" });
   }
 };
-export const orderRevenueBy7Days =async (req, res) => {
+export const orderRevenueBy7Days = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -398,7 +398,7 @@ export const orderRevenueBy7Days =async (req, res) => {
 };
 export const orderRevenueByQuarter = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -470,7 +470,7 @@ export const orderRevenueByQuarter = async (req, res) => {
 
 function getQuarter(month) {
   const monthNumber = parseInt(month.split('-')[1]);
-  
+
   if (monthNumber >= 1 && monthNumber <= 3) {
     return 'Q1';
   } else if (monthNumber >= 4 && monthNumber <= 6) {
@@ -483,7 +483,7 @@ function getQuarter(month) {
 }
 export const orderRevanue = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate({
+    const orders = await Order.find({ status: 5 }).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -541,11 +541,11 @@ export const getStatisticsFor24h = async (req, res) => {
 
     const bestSellingProduct = await Order.aggregate([
       {
-        $match: { createdAt: { $gte: date } },
+        $match: { createdAt: { $gte: date }, status: 5 },
       },
       {
         $lookup: {
-          from: 'orderdetails', 
+          from: 'orderdetails',
           localField: 'orderDetails',
           foreignField: '_id',
           as: 'orderDetail',
@@ -586,7 +586,7 @@ export const getStatisticsFor24h = async (req, res) => {
         $group: {
           _id: '$product._id',
           title: { $first: '$product.title' },
-          images: { $first: '$product.images'},
+          images: { $first: '$product.images' },
           totalQuantitySold: { $sum: '$totalQuantitySold' },
         },
       },
@@ -608,6 +608,7 @@ export const getStatisticsFor24h = async (req, res) => {
 
     const newOrders = await Order.find({
       createdAt: { $gte: date },
+      status: 5
     }).populate({
       path: 'orderDetails',
       populate: {
@@ -617,7 +618,7 @@ export const getStatisticsFor24h = async (req, res) => {
     });
 
     const revenue = newOrders.reduce((totalRevenue, order) => {
-      return totalRevenue + order.totalMoney; 
+      return totalRevenue + order.totalMoney;
     }, 0);
 
     const profit = newOrders.reduce((totalProfit, order) => {
@@ -635,13 +636,13 @@ export const getStatisticsFor24h = async (req, res) => {
       createdAt: { $gte: date },
     }).populate('productId');
     return res.status(200).json({
-        revenue,
-        profit,
-        newReviews,
-        newUsersCount,
-        newOrdersCount,
-        bestSellingProduct,
-      
+      revenue,
+      profit,
+      newReviews,
+      newUsersCount,
+      newOrdersCount,
+      bestSellingProduct,
+
     });
   } catch (error) {
     return res.status(500).json({

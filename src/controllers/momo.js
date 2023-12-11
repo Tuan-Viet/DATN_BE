@@ -128,7 +128,7 @@ export const momoIpn = async (req, res) => {
     let isSignatureValid = signature == req.body.signature ? true : false;
     console.log("1 ", req.body.signature);
     console.log("2 ", signature);
-    isSignatureValid = true 
+    isSignatureValid = true
     if (!isSignatureValid) {
       console.error("Invalid signature");
       return res.status(400).send("Invalid signature");
