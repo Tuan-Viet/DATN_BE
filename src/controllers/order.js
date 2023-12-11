@@ -1,17 +1,17 @@
-import Order from '../models/order.js'
-import Cart from '../models/cart.js'
-import User from '../models/user.js'
-import Voucher from '../models/voucher.js'
-import OrderDetail from '../models/order_detail.js'
-import ProductDetail from '../models/product_detail.js';
-import Product from '../models/product.js';
+import Order from "../models/order.js";
+import Cart from "../models/cart.js";
+import User from "../models/user.js";
+import Voucher from "../models/voucher.js";
+import OrderDetail from "../models/order_detail.js";
+import ProductDetail from "../models/product_detail.js";
+import Product from "../models/product.js";
 export const getAll = async (req, res) => {
     const {
         _page = 1,
         _limit = 100,
         _sort = "createdAt",
         _order = "desc",
-        _search
+        _search,
     } = req.query;
 
     const searchQuery = {};
@@ -43,18 +43,16 @@ export const getAll = async (req, res) => {
 
 export const get = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate(
-            "orderDetails"
-
-        ).populate("userId").populate("orderReturn")
+        const order = await Order.findById(req.params.id)
+            .populate("orderDetails")
+            .populate("userId")
+            .populate("orderReturn");
         if (!order) {
             return res.status(404).json({
                 message: "Order not found",
             });
         }
-        return res.status(200).json(
-            order
-        );
+        return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
             message: error,
@@ -64,8 +62,33 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { userId, fullName, email, phoneNumber, address, voucher_code, note, pay_method, totalMoney, carts, orderId, paymentStatus } = req.body
-        const newOrder = { userId, fullName, email, phoneNumber, address, voucher_code, note, pay_method, totalMoney, orderId, paymentStatus }
+        const {
+            userId,
+            fullName,
+            email,
+            phoneNumber,
+            address,
+            voucher_code,
+            note,
+            pay_method,
+            totalMoney,
+            carts,
+            orderId,
+            paymentStatus,
+        } = req.body;
+        const newOrder = {
+            userId,
+            fullName,
+            email,
+            phoneNumber,
+            address,
+            voucher_code,
+            note,
+            pay_method,
+            totalMoney,
+            orderId,
+            paymentStatus,
+        };
         const order = await Order.create(newOrder);
         if (!order) {
             return res.status(404).json({
@@ -73,57 +96,78 @@ export const create = async (req, res) => {
             });
         }
 
-        const orderDetails = await Promise.all(carts.map(async ({ productDetailId, price, quantity, color, size, totalMoney }) => {
-            const product = await Product.findOne({ "variants": productDetailId });
-            return {
-                orderId: order._id,
-                productDetailId,
-                price,
-                costPrice: product.costPrice,
-                quantity,
-                color,
-                size,
-                totalMoney
-            };
-        }));
+        const orderDetails = await Promise.all(
+            carts.map(
+                async ({
+                    productDetailId,
+                    price,
+                    quantity,
+                    color,
+                    size,
+                    totalMoney,
+                }) => {
+                    const product = await Product.findOne({ variants: productDetailId });
+                    return {
+                        orderId: order._id,
+                        productDetailId,
+                        price,
+                        costPrice: product.costPrice,
+                        quantity,
+                        color,
+                        size,
+                        totalMoney,
+                    };
+                }
+            )
+        );
 
-        await Promise.all(orderDetails.map(async (newOrderDetail) => {
-            const orderDetail = await OrderDetail.create(newOrderDetail);
-            if (!orderDetail) {
-                return res.status(404).json({
-                    message: "orderDetail not found",
+        await Promise.all(
+            orderDetails.map(async (newOrderDetail) => {
+                const orderDetail = await OrderDetail.create(newOrderDetail);
+                if (!orderDetail) {
+                    return res.status(404).json({
+                        message: "orderDetail not found",
+                    });
+                }
+                await Order.findByIdAndUpdate(orderDetail.orderId, {
+                    $addToSet: {
+                        orderDetails: orderDetail._id,
+                    },
                 });
-            }
-            await Order.findByIdAndUpdate(orderDetail.orderId, {
-                $addToSet: {
-                    orderDetails: orderDetail._id,
-                },
-            });
-            const productDetail = await ProductDetail.findById({ _id: orderDetail.productDetailId });
-            await ProductDetail.findByIdAndUpdate(
-                { _id: orderDetail.productDetailId },
-                {
-                    sold: orderDetail.quantity,
-                    quantity: productDetail.quantity - orderDetail.quantity
-                },
-                { new: true }
-            );
-        }));
+                // const productDetail = await ProductDetail.findById({
+                //   _id: orderDetail.productDetailId,
+                // });
+                await ProductDetail.findByIdAndUpdate(
+                    { _id: orderDetail.productDetailId },
+                    {
+                        $inc: {
+                            sold: orderDetail.quantity,
+                            quantity: -orderDetail.quantity
+                        }
+                    },
+                    { new: true }
+                );
+            })
+        );
 
-        const allCart = await Cart.find()
-        const userCart = await allCart.filter(cart => cart.userId === newOrder.userId)
+        const allCart = await Cart.find();
+        const userCart = await allCart.filter(
+            (cart) => cart.userId === newOrder.userId
+        );
 
-        await Promise.all(userCart.map(async item => {
-            await Cart.findOneAndDelete({ _id: item._id })
-        }));
+        await Promise.all(
+            userCart.map(async (item) => {
+                await Cart.findOneAndDelete({ _id: item._id });
+            })
+        );
         if (voucher_code) {
-            const voucher = await Voucher.findOne({ code: voucher_code })
+            const voucher = await Voucher.findOne({ code: voucher_code });
             console.log(voucher);
             const remove = await User.findOneAndUpdate(
                 { _id: userId },
                 { $pull: { voucherwallet: voucher._id } },
                 { new: true }
-            )
+            );
             console.log(remove);
         }
         return res.status(200).json(order);
@@ -144,6 +188,82 @@ export const update = async (req, res) => {
         if (!order) {
             return res.status(404).json({
                 message: "Order not found",
+            });
+        }
+        return res.status(200).json(order);
+    } catch (error) {
+        return res.status(500).json({
+            message: error,
+        });
+    }
+};
+export const createOrderByAdmin = async (req, res) => {
+    try {
+        const {
+            userId,
+            fullName,
+            email,
+            phoneNumber,
+            address,
+            //   voucher_code,
+            note,
+            pay_method,
+            totalMoney,
+            items,
+            paymentStatus,
+            employeeId,
+        } = req.body;
+        const newOrder = {
+            userId,
+            fullName,
+            email,
+            phoneNumber,
+            address,
+            //   voucher_code,
+            note,
+            pay_method,
+            totalMoney,
+            paymentStatus,
+            employeeId,
+        };
+
+        const order = await Order.create(newOrder);
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found",
+            });
+        }
+        let arrItem = [];
+        for (const item of items) {
+            const product = await Product.findOne({
+                "variants": item.productDetailId,
+            });
+            arrItem.push({
+                orderId: order._id,
+                productDetailId: item.productDetailId,
+                price: item.price,
+                costPrice: product.costPrice,
+                quantity: item.quantity,
+                color: item.color,
+                size: item.size,
+                totalMoney: item.totalMoney,
+            });
+        }
+
+        if (!arrItem || arrItem.length === 0) {
+            return res.status(400).json({ message: "err arrItem" });
+        }
+        for (const item of arrItem) {
+            const orderDetail = await OrderDetail.create(item);
+            if (!orderDetail) {
+                return res.status(404).json({
+                    message: "orderDetail not found",
+                });
+            }
+            await Order.findByIdAndUpdate(orderDetail.orderId, {
+                $addToSet: {
+                    orderDetails: orderDetail._id,
+                },
             });
         }
         return res.status(200).json(order);

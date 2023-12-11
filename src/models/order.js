@@ -55,6 +55,10 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    employeeId:{
+      type: mongoose.Types.ObjectId,
+      ref: "User"
+    }
   },
   { timestamps: true, versionKey: false }
 );
