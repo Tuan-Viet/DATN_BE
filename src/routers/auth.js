@@ -35,7 +35,7 @@ routerAuth.post("/review", createReview);
 
 routerAuth.put("/review/:id", checkAuthenticatedUser, updateReview);
 
-routerAuth.put("/review/:id/reply", checkAuthenticatedUser, adminReply);
+routerAuth.put("/review/:id/reply", checkPermission, adminReply);
 
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);
