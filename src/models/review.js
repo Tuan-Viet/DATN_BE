@@ -1,15 +1,30 @@
 import mongoose from "mongoose";
 
+const replySchema = new mongoose.Schema({
+  nameUser: {
+    type: String,
+    default: "Admin",
+  },
+  comment: {
+    type: String,
+    required: true,
+  },
+}, {
+  timestamps: true,
+  versionKey: false,
+});
+
+
 const reviewSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", 
+      ref: "Product",
       required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", 
+      ref: "User",
       required: true,
     },
     color: {
@@ -32,6 +47,7 @@ const reviewSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    reply: [replySchema],
   },
   {
     timestamps: true,

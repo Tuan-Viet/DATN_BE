@@ -33,7 +33,7 @@ routerAuth.get("/review/:id", getReviewById);
 
 routerAuth.post("/review", createReview);
 
-routerAuth.put("/review/:id", checkAuthenticatedUser, updateReview);
+routerAuth.patch("/review/:id", updateReview);
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);
 
