@@ -1,5 +1,5 @@
 import Review from "../models/review.js"; // Import model của đánh giá
-import { reviewSchema } from "../validations/review.js"; // Import schema kiểm tra dữ liệu cho đánh giá
+import { replySchema, reviewSchema } from "../validations/review.js"; // Import schema kiểm tra dữ liệu cho đánh giá
 
 // Tạo đánh giá mới
 export const createReview = async (req, res) => {
@@ -118,3 +118,52 @@ export const deleteReview = async (req, res) => {
         });
     }
 };
+
+export const adminReply = async (req, res) => {
+    try {
+        const userId = req.user._id
+      const { error } = replySchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          message: error.details[0].message,
+        });
+      }
+  
+      const { id } = req.params;
+  
+      const adminReply = {
+        nameUser: 'Admin',
+        comment: req.body.comment,
+        userId: userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+
+      };
+      console.log(adminReply);
+      const updatedReview = await Review.findByIdAndUpdate(
+        id,
+        {
+           reply: adminReply, 
+          $set: { updatedAt: new Date() },
+        },
+        { new: true }
+      );
+  console.log(updatedReview);
+      if (!updatedReview) {
+        return res.status(404).json({
+          message: 'Đánh giá không tồn tại',
+        });
+      }
+  
+      updatedReview.userId.password = '';
+  
+      return res.status(201).json(
+        updatedReview,
+      );
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Lỗi server',
+        error,
+      });
+    }
+  };

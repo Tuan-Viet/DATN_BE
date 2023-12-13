@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 
-const reviewSchema = new mongoose.Schema(
+const combinedSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", 
+      ref: "Product",
       required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", 
+      ref: "User",
       required: true,
     },
     color: {
@@ -32,6 +32,28 @@ const reviewSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    reply: 
+      {
+        nameUser: {
+          type: String,
+          default: "Admin",
+        },
+        comment: {
+          type: String,
+          required: true,
+        },
+        userId: {
+          type: mongoose.Types.ObjectId,
+          ref: "User"
+        },
+        createdAt: {
+          type: Date,
+        },
+        updatedAt: {
+          type: Date,
+        },
+      }
+    ,
   },
   {
     timestamps: true,
@@ -39,5 +61,4 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-// Tạo model cho đánh giá sản phẩm
-export default mongoose.model("Review", reviewSchema);
+export default mongoose.model("Review", combinedSchema);
