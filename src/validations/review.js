@@ -9,3 +9,9 @@ export const reviewSchema = Joi.object({
   color: Joi.string(),
   size: Joi.string()
 });
+
+export const replySchema = Joi.object({
+  nameUser: Joi.string().default('Admin'),
+  comment: Joi.string().required(),
+  userId: Joi.string()
+});

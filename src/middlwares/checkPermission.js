@@ -23,7 +23,7 @@ export const checkPermission = async (req, res, next) => {
           });
         }
         if (err.name === "TokenExpiredError") {
-          return res.status(400).json({
+          return res.status(401).json({
             message: "Token het han",
           });
         }
@@ -75,7 +75,7 @@ export const checkUserPermission = (requiredRole) => {
             });
           }
           if (err.name === "TokenExpiredError") {
-            return res.status(400).json({
+            return res.status(401).json({
               message: "Token hết hạn",
             });
           }
@@ -129,7 +129,7 @@ export const checkAuthenticatedUser = async (req, res, next) => {
           });
         }
         if (err.name === "TokenExpiredError") {
-          return res.status(400).json({
+          return res.status(401).json({
             message: "Token hết hạn",
           });
         }

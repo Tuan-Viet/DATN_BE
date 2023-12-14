@@ -135,6 +135,11 @@ export const create = async (req, res) => {
 };
 export const remove = async (req, res) => {
     try {
+        const deletedProductDetails = await ProductDetail.deleteMany({ product_id: req.params.id });
+
+    if (!deletedProductDetails) {
+      return res.status(400).json({ message: "Lỗi khi xóa chi tiết sản phẩm" });
+    }
         const product = await Product.findOneAndDelete({ _id: req.params.id });
         return res.status(200).json(
             product,
@@ -292,7 +297,6 @@ export const getOneByAdmin = async (req, res) => {
             "categoryId",
             "products"
         );
-        console.log(1);
         if (!product) {
             return res.status(404).json({
                 message: "Product not found",

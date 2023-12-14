@@ -1,8 +1,8 @@
-import moment from "moment/moment";
-import Order from "../models/order";
+import moment from "moment/moment.js";
+import Order from "../models/order.js";
 import "moment-timezone";
-import User from "../models/user";
-import Review from "../models/review";
+import User from "../models/user.js";
+import Review from "../models/review.js";
 export const productRevenue = async (req, res) => {
   try {
     const productRevenue = await Order.find({
@@ -60,7 +60,7 @@ export const productRevenue = async (req, res) => {
 };
 export const orderRevenue = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -107,7 +107,7 @@ export const orderRevenue = async (req, res) => {
 
 export const orderRevanueByDate = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -181,7 +181,7 @@ export const orderRevanueByDate = async (req, res) => {
 };
 export const orderRevanueByMonth = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -252,7 +252,7 @@ export const orderRevanueByMonth = async (req, res) => {
 };
 export const orderRevanueByWeek = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -322,7 +322,7 @@ export const orderRevanueByWeek = async (req, res) => {
 };
 export const orderRevenueBy7Days =async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -398,7 +398,7 @@ export const orderRevenueBy7Days =async (req, res) => {
 };
 export const orderRevenueByQuarter = async (req, res) => {
   try {
-    const orders = await Order.find().populate({
+    const orders = await Order.find({status: 5}).populate({
       path: 'orderDetails',
       populate: {
         path: 'productDetailId',
@@ -483,7 +483,7 @@ function getQuarter(month) {
 }
 export const orderRevanue = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate({
+    const orders = await Order.find({status: 5}).populate({
       path: "orderDetails",
       populate: {
         path: "productDetailId",
@@ -541,7 +541,7 @@ export const getStatisticsFor24h = async (req, res) => {
 
     const bestSellingProduct = await Order.aggregate([
       {
-        $match: { createdAt: { $gte: date } },
+        $match: { createdAt: { $gte: date }, status: 5 },
       },
       {
         $lookup: {
@@ -586,6 +586,7 @@ export const getStatisticsFor24h = async (req, res) => {
         $group: {
           _id: '$product._id',
           title: { $first: '$product.title' },
+          images: { $first: '$product.images'},
           totalQuantitySold: { $sum: '$totalQuantitySold' },
         },
       },
@@ -596,9 +597,13 @@ export const getStatisticsFor24h = async (req, res) => {
         $project: {
           _id: 1,
           title: 1,
+          images: 1,
           totalQuantitySold: 1,
         },
       },
+      {
+        $limit: 5,
+      }
     ]);
 
     const newOrders = await Order.find({
@@ -639,7 +644,6 @@ export const getStatisticsFor24h = async (req, res) => {
       
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       success: false,
       message: 'Internal Server Error',
