@@ -1,7 +1,7 @@
 import express from "express";
 import { addAddress, addVourcher, changePassword, confirmRegistration, deleteAddress, deleteUserPermanently, forgotPassword, getAllUsersAsAdmin, getInfoUser, getUser, resetPassword, signin, signup, updateAddress, updateUser } from "../controllers/auth.js";
 // import passport from "passport";
-import { createReview, deleteReview, getReviewById, getReviews, updateReview } from "../controllers/review.js";
+import { adminReply, createReview, deleteReview, getReviewById, getReviews, updateReview } from "../controllers/review.js";
 import { checkAuthenticatedUser, checkPermission } from './../middlwares/checkPermission.js';
 
 const routerAuth = express.Router();
@@ -34,6 +34,9 @@ routerAuth.get("/review/:id", getReviewById);
 routerAuth.post("/review", createReview);
 
 routerAuth.patch("/review/:id", updateReview);
+
+routerAuth.put("/review/:id/reply", checkAuthenticatedUser, adminReply);
+
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);
 
