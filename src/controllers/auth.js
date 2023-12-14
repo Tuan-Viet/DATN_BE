@@ -289,7 +289,7 @@ export const changePassword = async (req, res) => {
 
 export const addAddress = async (req, res) => {
   try {
-    const { address, isDefault, fullname, phone } = req.body;
+    const { address, isDefault, fullname, phone, myProvince, myDistrict, myWard } = req.body;
     const userId = req.user._id;
 
     if (isDefault) {
@@ -305,6 +305,9 @@ export const addAddress = async (req, res) => {
       address,
       fullname,
       phone,
+      myProvince,
+      myDistrict,
+      myWard,
       isDefault: isDefault || false,
     });
 
@@ -341,12 +344,12 @@ export const deleteAddress = async (req, res) => {
 export const updateAddress = async (req, res) => {
   try {
     const { id } = req.params; // Lấy ID của địa chỉ cần cập nhật
-    const { address, isDefault, fullname, phone } = req.body;
+    const { address, isDefault, fullname, phone, myProvince, myDistrict, myWard } = req.body;
 
     // Cập nhật trường "address" của địa chỉ cụ thể
     const newAddress = await Address.findByIdAndUpdate(
       id,
-      { address, isDefault, fullname, phone },
+      { address, isDefault, fullname, phone, myProvince, myDistrict, myWard },
       { new: true }
     );
     return res.status(200).json(newAddress);
@@ -417,7 +420,7 @@ export const forgotPassword = async (req, res) => {
     }
     const token = jwt.sign({ email }, SECRET_CODE, { expiresIn: "1h" });
     user.forgotPasswordToken = token;
-    
+
     const result = await User.updateOne(
       { email },
       { $set: { forgotPasswordToken: token } }

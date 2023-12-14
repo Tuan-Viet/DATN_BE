@@ -141,8 +141,8 @@ export const create = async (req, res) => {
           { _id: orderDetail.productDetailId },
           {
             $inc: {
-                sold: orderDetail.quantity,
-                quantity: -orderDetail.quantity
+              sold: orderDetail.quantity,
+              quantity: -orderDetail.quantity
             }
           },
           { new: true }
@@ -205,7 +205,7 @@ export const createOrderByAdmin = async (req, res) => {
       email,
       phoneNumber,
       address,
-    //   voucher_code,
+      //   voucher_code,
       note,
       pay_method,
       totalMoney,
@@ -219,7 +219,7 @@ export const createOrderByAdmin = async (req, res) => {
       email,
       phoneNumber,
       address,
-    //   voucher_code,
+      //   voucher_code,
       note,
       pay_method,
       totalMoney,
