@@ -15,7 +15,7 @@ import routerPay from "./payment.js"
 import routerMailer from "./mailer.js"
 import routerStatistic from "./statistic.js"
 import routerCron from "./cron.js"
-import routerOutfit from './outfit';
+import routerOutfit from './outfit.js';
 
 const router = express.Router()
 
