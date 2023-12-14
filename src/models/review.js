@@ -40,7 +40,6 @@ const combinedSchema = new mongoose.Schema(
       },
       comment: {
         type: String,
-        required: true,
       },
       userId: {
         type: mongoose.Types.ObjectId,

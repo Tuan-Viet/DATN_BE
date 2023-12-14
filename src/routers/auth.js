@@ -24,9 +24,6 @@ routerAuth.post("/get-user", checkAuthenticatedUser, getUser);
 routerAuth.patch("/user-address/:id/edit", checkAuthenticatedUser, updateAddress);
 routerAuth.delete("/user-address/:id", checkAuthenticatedUser, deleteAddress);
 
-
-
-
 routerAuth.get("/reviews", getReviews);
 
 routerAuth.get("/review/:id", getReviewById);
@@ -35,7 +32,7 @@ routerAuth.post("/review", createReview);
 
 routerAuth.patch("/review/:id", updateReview);
 
-routerAuth.put("/review/:id/reply", checkAuthenticatedUser, adminReply);
+routerAuth.patch("/review/:id/reply", checkPermission, adminReply);
 
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);
