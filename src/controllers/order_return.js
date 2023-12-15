@@ -144,3 +144,26 @@ export const update = async (req, res) => {
         });
     }
 };
+
+export const deleteOrderReturnByAdmin = async (req, res) => {
+    try {
+  
+      const deletedOrderReturnDetails = await OrderReturnDetail.deleteMany({ orderReturnId: req.params.id });
+  
+      if (!deletedOrderReturnDetails) {
+        return res.status(400).json({ message: "Lỗi khi xóa chi tiết đơn đổi" });
+      }
+  
+      const deletedOrderReturn = await OrderReturn.findByIdAndDelete(req.params.id);
+  
+      if (!deletedOrderReturn) {
+        return res.status(400).json({ message: "Lỗi khi xóa đơn hàng đổi" });
+      }
+  
+      return res.status(200).json({ message: "Đã xóa đơn hàng và chi tiết đơn hàng", deletedOrderReturn: deletedOrderReturn });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
