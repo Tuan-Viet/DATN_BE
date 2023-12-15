@@ -35,6 +35,9 @@ const orderReturnSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        note: {
+            type: String,
+        },
         status: {
             type: Number,
             default: 1,
