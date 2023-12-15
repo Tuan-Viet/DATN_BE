@@ -16,10 +16,12 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     address: {
-      type: String,
-      required: true,
+      myProvince: { type: String, required: true },
+      myDistrict: { type: String, required: true },
+      myWard: { type: String, required: true },
+      detailAddress: { type: String, required: true }
     },
-    paymentStatus:{
+    paymentStatus: {
       type: Number,
       default: 0
     },
@@ -55,7 +57,7 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    employeeId:{
+    employeeId: {
       type: mongoose.Types.ObjectId,
       ref: "User"
     }

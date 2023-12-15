@@ -537,7 +537,6 @@ export const getStatisticsFor24h = async (req, res) => {
 
     const newOrdersCount = await Order.countDocuments({
       createdAt: { $gte: date },
-      isActive: true
     });
 
     const bestSellingProduct = await Order.aggregate([
