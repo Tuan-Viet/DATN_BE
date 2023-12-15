@@ -32,7 +32,7 @@ routerAuth.post("/review", createReview);
 
 routerAuth.patch("/review/:id", updateReview);
 
-routerAuth.put("/review/:id/reply", checkPermission, adminReply);
+routerAuth.patch("/review/:id/reply", checkPermission, adminReply);
 
 
 routerAuth.delete("/review/:id", checkPermission, deleteReview);

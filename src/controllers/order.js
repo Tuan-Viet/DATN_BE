@@ -5,6 +5,7 @@ import Voucher from "../models/voucher.js";
 import OrderDetail from "../models/order_detail.js";
 import ProductDetail from "../models/product_detail.js";
 import Product from "../models/product.js";
+import order_return from "../models/order_return.js";
 export const getAll = async (req, res) => {
     const {
         _page = 1,
@@ -212,6 +213,7 @@ export const createOrderByAdmin = async (req, res) => {
             items,
             paymentStatus,
             employeeId,
+            orderReturnId
         } = req.body;
         const newOrder = {
             userId,
@@ -225,6 +227,7 @@ export const createOrderByAdmin = async (req, res) => {
             totalMoney,
             paymentStatus,
             employeeId,
+
         };
 
         const order = await Order.create(newOrder);
@@ -266,6 +269,13 @@ export const createOrderByAdmin = async (req, res) => {
                 },
             });
         }
+
+        await order_return.findByIdAndUpdate(orderReturnId, {
+            $addToSet: {
+                newOrder: order._id,
+            },
+        });
+
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
@@ -276,25 +286,25 @@ export const createOrderByAdmin = async (req, res) => {
 
 
 export const deleteOrderByAdmin = async (req, res) => {
-  try {
+    try {
 
-    const deletedOrderDetails = await OrderDetail.deleteMany({ orderId: req.params.id });
+        const deletedOrderDetails = await OrderDetail.deleteMany({ orderId: req.params.id });
 
-    if (!deletedOrderDetails) {
-      return res.status(400).json({ message: "Lỗi khi xóa chi tiết đơn hàng" });
+        if (!deletedOrderDetails) {
+            return res.status(400).json({ message: "Lỗi khi xóa chi tiết đơn hàng" });
+        }
+
+        const deletedOrder = await Order.findByIdAndDelete(req.params.id);
+
+        if (!deletedOrder) {
+            return res.status(400).json({ message: "Lỗi khi xóa đơn hàng" });
+        }
+
+        return res.status(200).json({ message: "Đã xóa đơn hàng và chi tiết đơn hàng", deletedOrder: deletedOrder });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message,
+        });
     }
-
-    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
-
-    if (!deletedOrder) {
-      return res.status(400).json({ message: "Lỗi khi xóa đơn hàng" });
-    }
-
-    return res.status(200).json({ message: "Đã xóa đơn hàng và chi tiết đơn hàng", deletedOrder: deletedOrder });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
 };
 
