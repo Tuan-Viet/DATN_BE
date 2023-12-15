@@ -2,9 +2,10 @@ import Outfit from '../models/outfit.js';
 
 export const createOutfit = async (req, res) => {
   try {
-    const { title, description, image, items, hide } = req.body;
+    const { title, description, image, items, hide, sku } = req.body;
     const newOutfit = await Outfit.create({
       title,
+      sku,
       description,
       image,
       items,
@@ -27,13 +28,13 @@ export const getOutfit = async (req, res) => {
 };
 
 export const getAllOutfit = async (req, res) => {
-    try {
-      const outfit = await Outfit.find().populate("items");
-      return res.status(200).json(outfit);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  };
+  try {
+    const outfit = await Outfit.find().populate("items");
+    return res.status(200).json(outfit);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 export const updateOutfit = async (req, res) => {
   try {
