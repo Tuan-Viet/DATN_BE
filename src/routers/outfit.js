@@ -3,11 +3,11 @@ import { createOutfit, deleteOutfit, getAllOutfit, getOutfit, updateOutfit } fro
 
 const routerOutfit = express.Router();
 
-routerOutfit.get(`/`,getAllOutfit)
-routerOutfit.get(`/:id`,getOutfit)
-routerOutfit.post(`/add`,createOutfit)
-routerOutfit.patch(`/:id/edit`,updateOutfit)
-routerOutfit.delete(`/:id`,deleteOutfit)
+routerOutfit.get(`/`, getAllOutfit)
+routerOutfit.get(`/:id`, getOutfit)
+routerOutfit.post(`/add`, createOutfit)
+routerOutfit.patch(`/:id/edit`, updateOutfit)
+routerOutfit.delete(`/:id`, deleteOutfit)
 
 
 

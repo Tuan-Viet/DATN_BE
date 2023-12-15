@@ -45,7 +45,7 @@ export const sendConfirmationEmail = async (userEmail, confirmationCode) => {
       subject: 'Xác nhận tài khoản',
       html: `
       <div style="width:100%;text-align:center;height: 100vh">
-    <img style="width: 300px;" src="https://th.bing.com/th/id/OIP.iQpnF5mnvA7zCsclvXr3QAHaFa?rs=1&pid=ImgDetMain" alt="">
+    <p>Chào bạn đến với HUSTLE</p>
     <div class="text-center w-[350px]"> Chào mừng bạn đến với <span style="font-weight: 600;">Hustle</span> click
       vào
       nút <span style="font-weight: 600;">bên dưới</span>

@@ -7,15 +7,18 @@ const outfitSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        sku: {
+            type: String,
+            required: true,
+        },
         description: {
             type: String,
         },
-        image: 
-            {
-                type: Object,
-                required: true,
-            },
-        
+        image: {
+            type: Object,
+            required: true,
+        },
+
         items: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
         hide: {
             type: Boolean,

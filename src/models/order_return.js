@@ -35,6 +35,7 @@ const orderReturnSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        newOrder: { type: mongoose.Types.ObjectId, ref: "Order" },
         status: {
             type: Number,
             default: 1,

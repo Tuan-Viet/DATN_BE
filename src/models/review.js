@@ -32,27 +32,26 @@ const combinedSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    reply: 
-      {
-        nameUser: {
-          type: String,
-          default: "Admin",
-        },
-        comment: {
-          type: String,
-          required: true,
-        },
-        userId: {
-          type: mongoose.Types.ObjectId,
-          ref: "User"
-        },
-        createdAt: {
-          type: Date,
-        },
-        updatedAt: {
-          type: Date,
-        },
-      }
+    reply:
+    {
+      nameUser: {
+        type: String,
+        default: "Admin",
+      },
+      comment: {
+        type: String,
+      },
+      userId: {
+        type: mongoose.Types.ObjectId,
+        ref: "User"
+      },
+      createdAt: {
+        type: Date,
+      },
+      updatedAt: {
+        type: Date,
+      },
+    }
     ,
   },
   {
