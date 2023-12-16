@@ -63,7 +63,7 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { orderId, userId, fullName, phoneNumber, images, address, reason, orderDetailIds, note } = req.body
+        const { orderId, userId, fullName, phoneNumber, images, address, reason, note, orderDetailIds } = req.body
         const newOrder = { orderId, userId, fullName, images, phoneNumber, address, reason, note }
         const orderReturn = await OrderReturn.create(newOrder);
         if (!orderReturn) {
