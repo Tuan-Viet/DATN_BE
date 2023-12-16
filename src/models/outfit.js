@@ -18,7 +18,10 @@ const outfitSchema = new mongoose.Schema(
             type: Object,
             required: true,
         },
-
+        discount: {
+            type: Number,
+            required: true,
+        },
         items: [{ type: mongoose.Types.ObjectId, ref: "ProductDetail" }],
         hide: {
             type: Boolean,
