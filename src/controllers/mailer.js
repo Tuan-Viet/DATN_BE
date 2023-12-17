@@ -310,14 +310,15 @@ ${
       ${order.voucher_code}
   </td>
 </tr>`
-    : ""
+    : ""  
 }
                                               <tr>
-                                                  <td colspan="3">
-                                                      Tổng giá trị sản phẩm
-                                                  </td>
-                                                  <td style="text-align:right">
-                                                  ${order.totalMoney}đ
+                                              <td colspan="3">
+                                              Tổng giá trị sản phẩm
+                                              </td>
+                                              <td></td>
+                                              <td style="text-align:right">
+                                                  ${order.orderDetails.reduce((acc, item)=>acc+= item.price*item.quantity, 0)}đ
                                                   </td>
                                               </tr>
                                               ${
@@ -330,24 +331,25 @@ ${
       -${order.voucherDiscounted}
   </td>
 </tr>`
-                                                  : ""
+                                                  : "<td></td>"
                                               }
 ${
   order.totalMoney< 540000
     ? `                                               <tr>
   <td colspan="3">
      Phí vận chuyển
-  </td>
+  </td><td></td>
   <td style="text-align:right">
       40.000đ
   </td>
 </tr>`
-    : ""
+    : "<td></td>"
 }
                                               <tr>
-                                                  <td colspan="3">
-                                                      <b>Tổng thanh toán</b>
-                                                  </td>
+                                              <td colspan="3">
+                                              <b>Tổng thanh toán</b>
+                                              </td>
+                                              <td></td>
                                                   <td style="text-align:right">
                                                       <b>
                                                       ${order.totalMoney}
@@ -356,9 +358,10 @@ ${
                                                   </td>
                                               </tr>
                                               <tr>
-                                                  <td colspan="3">
-                                                      <b>Hình thức thanh toán</b>
-                                                  </td>
+                                              <td colspan="3">
+                                              <b>Hình thức thanh toán</b>
+                                              </td>
+                                              <td></td>
                                                   <td style="text-align:right">
                                                       <b>
                                                       ${order.pay_method}
