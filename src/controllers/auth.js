@@ -468,7 +468,7 @@ export const resetPassword = async (req, res) => {
     user.forgotPasswordToken = null;
     const result = await User.updateOne(
       { email },
-      { $set: { forgotPasswordToken: null, password:  hashedPassword} }
+      { $set: { forgotPasswordToken: null, password: hashedPassword } }
     );
 
     if (result.modifiedCount === 0) {
@@ -498,12 +498,14 @@ export const addVourcher = async (req, res) => {
     );
     // console.log(vourcherId);
     const vourcher = await Voucher.findById(req.body.voucherId)
-    if (updatedUser) {
-      await Voucher.findByIdAndUpdate(
-        { _id: req.body.voucherId },
-        { quantity: vourcher.quantity - 1 },
-        { new: true }
-      )
+    if (vourcher.quantity > 0) {
+      if (updatedUser) {
+        await Voucher.findByIdAndUpdate(
+          { _id: req.body.voucherId },
+          { quantity: vourcher.quantity - 1 },
+          { new: true }
+        )
+      }
     }
     res.status(201).json(updatedUser);
   } catch (err) {
