@@ -42,7 +42,7 @@ export async function updateOrderStatus(req, res) {
     const oneDayAgo = new Date();
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
   console.log(oneDayAgo);
-    const usersToDelete = await User.find({
+    const usersToDelete = await User.deleteMany({
       isActive: false,
       createdAt: { $lte: oneDayAgo },
     });
