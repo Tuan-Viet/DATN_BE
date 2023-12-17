@@ -1,5 +1,6 @@
 import Order from "../models/order.js";
 import OrderReturn from "../models/order_return.js";
+import User from "../models/user.js";
 
 
 export async function updateOrderStatus(req, res) {
@@ -22,7 +23,6 @@ export async function updateOrderStatus(req, res) {
         }
         orderChangeArr.push(updateStatus);    
         const orderReturn = await OrderReturn.findOne({ orderId: order._id });
-        console.log(orderReturn);
       if (orderReturn && orderReturn.status == 3) {
         const updateReturnStatus = await OrderReturn.findByIdAndUpdate(
           orderReturn._id,
@@ -39,7 +39,14 @@ export async function updateOrderStatus(req, res) {
       }
       }
     }
-    return res.status(200).json(orderChangeArr);
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+  console.log(oneDayAgo);
+    const usersToDelete = await User.find({
+      isActive: false,
+      createdAt: { $lte: oneDayAgo },
+    });
+    return res.status(200).json([orderChangeArr,usersToDelete]);
   } catch (error) {
     console.error("Lỗi không xác định:", error.message);
   }
