@@ -6,6 +6,7 @@ import OrderDetail from "../models/order_detail.js";
 import ProductDetail from "../models/product_detail.js";
 import Product from "../models/product.js";
 import order_return from "../models/order_return.js";
+import { mailOrder } from "./mailer.js";
 export const getAll = async (req, res) => {
     const {
         _page = 1,
@@ -171,6 +172,23 @@ export const create = async (req, res) => {
             );
             console.log(remove);
         }
+        let ordermail = await Order
+  .findById(order._id)
+  .populate({
+    path: "orderDetails",
+    populate: {
+      path: "productDetailId",
+      model: "ProductDetail", 
+      populate: {
+        path: "product_id",
+        model: "Product" 
+      }
+    }
+  })
+  .exec();
+
+   mailOrder(email, ordermail)
+
         return res.status(200).json(order);
     } catch (error) {
         return res.status(500).json({
@@ -178,7 +196,6 @@ export const create = async (req, res) => {
         });
     }
 };
-
 
 export const update = async (req, res) => {
     try {
