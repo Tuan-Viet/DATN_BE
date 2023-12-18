@@ -115,7 +115,7 @@ export const vnpayIpn = async (req, res, next) => {
             res.status(200).json({ RspCode: "00", Message: "Success" });
           } else {
             //that bai
-            await Order.updateOne({ _id: orderId }, { paymentStatus: 2 });
+           await Order.findByIdAndDelete(orderId)
             // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
