@@ -21,7 +21,7 @@ export async function handleCreatePayment(req, res) {
     const requestId = partnerCode + new Date().getTime();
     const orderId = req.body._id;
     const orderInfo = "pay with MoMo";
-    const redirectUrl = "http://localhost:5173/account/orders";
+    const redirectUrl = `http://localhost:5173/account/orders/${orderId}`;
     const ipnUrl =
       "https://datn-be-gy1y.onrender.com/api/paymentMethod/momo_ipn";
     const amount = req.body.totalMoney;

@@ -1,29 +1,10 @@
 import Product from "../models/product.js";
 import ProductDetail from "../models/product_detail.js";
-import { productDetailSchema } from "../validations/product_details.js";
 export const getAll = async (req, res) => {
     // req.query._sort => price
-    const {
-        _page = 1,
-        _limit = 100,
-        _sort = "createdAt",
-        _order = "desc",
-        _search
-    } = req.query;
 
-    const searchQuery = {};
-    if (_search) {
-        searchQuery.name = { $regex: _search, $options: "i" };
-    }
-    const optinos = {
-        page: _page,
-        limit: _limit,
-        sort: {
-            [_sort]: _order === "desc" ? "-1" : "1",
-        },
-    };
     try {
-        const { docs: productDetails } = await ProductDetail.paginate(searchQuery, optinos);
+        const  productDetails  = await ProductDetail.find()
         if (!productDetails) {
             return res.status(404).json({
                 message: "Product not found",

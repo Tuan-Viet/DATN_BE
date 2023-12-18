@@ -50,7 +50,7 @@ export const vnpayMethod = (req, res, next) => {
   vnp_Params["vnp_OrderInfo"] = orderInfo;
   vnp_Params["vnp_OrderType"] = orderType;
   vnp_Params["vnp_Amount"] = amount * 100;
-  vnp_Params["vnp_ReturnUrl"] = returnUrl;
+  vnp_Params["vnp_ReturnUrl"] = returnUrl+`/${orderId}`;
   vnp_Params["vnp_IpAddr"] = ipAddr;
   vnp_Params["vnp_CreateDate"] = createDate;
   if (bankCode !== null && bankCode !== "") {

@@ -6,6 +6,7 @@ import User from "../models/user.js";
 export async function updateOrderStatus(req, res) {
   try {
     const orders = await Order.find();
+    console.log(orders);
     if (orders.length === 0) {
         return res.status(400).json({
           message: "Không tìm thấy đơn hàng",
