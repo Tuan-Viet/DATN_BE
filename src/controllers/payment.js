@@ -8,7 +8,7 @@ const config = {
   vnp_HashSecret: "RJRZUERJQDXYYBAXXESGCVHKGDTZXHDB",
   vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
   vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
-  vnp_ReturnUrl: "http://localhost:5173/account/orders",
+  vnp_ReturnUrl: "http://localhost:5173/orders",
 };
 export const vnpayMethod = (req, res, next) => {
 

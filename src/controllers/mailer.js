@@ -181,7 +181,7 @@ console.log(order);
                                       style="border:2px solid #2f5acf;padding:8px 16px;border-radius:16px;margin-top:16px">
                                       <p style="margin:10px 0 20px;font-weight:bold;font-size:20px">
                                           THÔNG TIN ĐƠN HÀNG
-                                          <a href="http://localhost:5173/account/orders/657f1becc60c6e28c270042a"
+                                          <a href="http://localhost:5173/orders/${order._id}"
                                               style="color:#2f5acf;text-decoration:none" target="_blank"
                                               data-saferedirecturl="http://localhost:5173/">
                                               ${order._id}
