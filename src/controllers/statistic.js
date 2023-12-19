@@ -76,6 +76,7 @@ export const orderRevenue = async (req, res) => {
 
     let orderStatisticsArray = [];
 
+    console.log(orders);
     orders.forEach((order) => {
       let totalQuantitySold = 0;
       let totalOrderValue = 0;
@@ -124,12 +125,12 @@ export const orderRevanueByDate = async (req, res) => {
     let orderStatisticsByTime = {};
 
     orders.forEach((order) => {
-      const date = moment(order.createdAt)
+      const day = moment(order.createdAt)
         .tz("Asia/Ho_Chi_Minh")
         .format("YYYY-MM-DD");
 
-      if (!orderStatisticsByTime[date]) {
-        orderStatisticsByTime[date] = {
+      if (!orderStatisticsByTime[day]) {
+        orderStatisticsByTime[day] = {
           totalOrders: 0,
           totalOrderValue: 0,
           totalRevenue: 0,
@@ -153,17 +154,17 @@ export const orderRevanueByDate = async (req, res) => {
         totalProfit += (detail.price - detail.costPrice) * detail.quantity;
       });
 
-      orderStatisticsByTime[date].totalOrders += 1;
-      orderStatisticsByTime[date].totalOrderValue += totalOrderValue;
-      orderStatisticsByTime[date].totalRevenue += totalRevenue;
-      orderStatisticsByTime[date].totalProfit += totalProfit;
-      orderStatisticsByTime[date].totalQuantitySold += totalQuantitySold;
-      orderStatisticsByTime[date].totalCostPrice += totalCostPrice;
+      orderStatisticsByTime[day].totalOrders += 1;
+      orderStatisticsByTime[day].totalOrderValue += totalOrderValue;
+      orderStatisticsByTime[day].totalRevenue += totalRevenue;
+      orderStatisticsByTime[day].totalProfit += totalProfit;
+      orderStatisticsByTime[day].totalQuantitySold += totalQuantitySold;
+      orderStatisticsByTime[day].totalCostPrice += totalCostPrice;
     });
 
     const resultArray = Object.entries(orderStatisticsByTime).map(
-      ([date, stats]) => ({
-        date: date,
+      ([day, stats]) => ({
+        day: day,
         totalOrders: stats.totalOrders,
         totalOrderValue: stats.totalOrderValue,
         totalRevenue: stats.totalRevenue,
