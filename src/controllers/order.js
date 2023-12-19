@@ -109,6 +109,10 @@ export const create = async (req, res) => {
                     totalMoney,
                 }) => {
                     const product = await Product.findOne({ variants: productDetailId });
+                    if(!product){
+                        const order = await Order.findByIdAndDelete(order._id);
+                        return res.status(400).json({message:"Loi khi xoa don hang"})
+                    }
                     return {
                         orderId: order._id,
                         productDetailId,

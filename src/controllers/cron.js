@@ -13,6 +13,9 @@ export async function updateOrderStatus(req, res) {
         });
       }
     let orderChangeArr = [];
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
     for (const order of orders) {
       if (order.status === 4 && order.paymentStatus === 1) {
         const updateStatus = await Order.findByIdAndUpdate(order._id, {
@@ -31,7 +34,6 @@ export async function updateOrderStatus(req, res) {
             status: 4,
           }
         );
-        console.log(updateReturnStatus);
         if (!updateReturnStatus) {
           return res
             .status(400)
@@ -39,6 +41,21 @@ export async function updateOrderStatus(req, res) {
         }
       }
       }
+      if (
+        order.status === 3 &&
+        order.paymentStatus === 1 &&
+        order.createdAt <= sevenDaysAgo
+      ) {
+        const updateStatus = await Order.findByIdAndUpdate(order._id, {
+          status: 5,
+        });
+
+        if (!updateStatus) {
+          return res
+            .status(400)
+            .json({ message: "Lỗi cập nhật trạng thái đơn hàng" });
+        }}
+      
     }
     const oneDayAgo = new Date();
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
