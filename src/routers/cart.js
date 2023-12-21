@@ -1,6 +1,5 @@
 import express from "express";
-import { create, get, getAll, remove, update } from "../controllers/product_detail.js";
-
+import { create, get, getAll, remove, update } from "../controllers/cart.js";
 const router = express.Router()
 
 router.get('/', getAll)

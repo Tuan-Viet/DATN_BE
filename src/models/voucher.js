@@ -9,7 +9,7 @@ const voucherSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: validVoucherTypes, 
+        enum: validVoucherTypes,
         required: true
     },
     code: {
@@ -18,7 +18,6 @@ const voucherSchema = new mongoose.Schema({
     },
     quantity: {
         type: Number,
-        required: true
     },
     discount: {
         type: Number,
@@ -26,11 +25,14 @@ const voucherSchema = new mongoose.Schema({
     },
     used: {
         type: Number,
-        required: true
     },
-    minOrderValue:{
+    minOrderValue: {
         type: Number,
-        required: true
+        default: 0,
+    },
+    maxOrderValue: {
+        type: Number,
+        default: 0,
     },
     validFrom: {
         type: Date,
@@ -38,13 +40,18 @@ const voucherSchema = new mongoose.Schema({
     },
     validTo: {
         type: Date,
-        required: true
     },
-
+    description: {
+        type: String,
+    },
+    status: {
+        type: Boolean,
+        default: true
+    },
 },
-{
-    timestamps: true,
-    versionKey: false
-});
+    {
+        timestamps: true,
+        versionKey: false
+    });
 
 export default mongoose.model('Voucher', voucherSchema);

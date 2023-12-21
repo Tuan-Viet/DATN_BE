@@ -5,16 +5,23 @@ import connectDB from "./config/database.js";
 import router from "./routers/index.js";
 
 dotenv.config();
-
 const app = express();
+
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors(
+  //   {
+  //   origin: "http://localhost:5173",
+  //   methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+  //   optionsSuccessStatus: 204,
+  //   ocredentials: true,
+  // }
+  )
+);
 
-app.use('/api', router)
+app.use("/api", router);
 
-// Conect to MongoDB
-connectDB(process.env.MONGODB_URL)
-// connectDB('mongodb://127.0.0.1/datn-database')
+connectDB(process.env.MONGODB_URL);
 
 app.use("/api", router);
 app.listen(process.env.PORT, () => {

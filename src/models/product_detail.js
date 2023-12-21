@@ -19,7 +19,7 @@
 //         sold: {
 //             type: Number,
 //             required: true,
-//             min: 0,
+//             default: 0,
 //         },
 //         quantity: {
 //             type: Number,
@@ -70,11 +70,11 @@ const productDetailSchema = new mongoose.Schema(
             type: Number,
             required: true,
             min: 0,
+            default: 0,
         },
         quantity: {
             type: Number,
             required: true,
-            default: 0,
             min: 0,
         },
         imageColor: {
